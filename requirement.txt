@@ -2,3 +2,7 @@ fastapi[standard]
 uvicorn
 asyncpg
 psycopg2-binary
+sqlalchemy
+pymysql
+cryptography
+alembic
