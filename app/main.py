@@ -1,14 +1,9 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-
-class TypeService(BaseModel):
-    name: str
-    service_value: int
+from schemas.services import TypeService
 
 app = FastAPI()
 
 
 @app.post("/service")
-async def service(get_service: TypeService):
-    return get_service
-
+async def service(post_service: TypeService):
+    return post_service
