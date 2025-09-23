@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 
-class TypeService(BaseModel):
+class TypeServiceSchema(BaseModel):
     name: str
-    service_value: int
+    service_value: float
+
+    class Config:
+        from_attributes = True
