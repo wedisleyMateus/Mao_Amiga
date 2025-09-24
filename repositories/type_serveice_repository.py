@@ -16,11 +16,11 @@ def get_type_service(service_id, db: Session) -> Optional[int]:
     return service
 
 def update_type_service(service_id, service, db: Session):
-    update_service = db.query(TypeService).filter(TypeService.id==service_id).first()
-    for key, value in service.dict(exclude_unset=True).items():
-        setattr(update_service, key, value)
+    get_service = db.query(TypeService).filter(TypeService.id==service_id).first()
+    get_service.name = service.name
+    get_service.service_value = service.service_value
     db.commit()
-    db.refresh(update_service)
-    return update_service
+    db.refresh(get_service)
+    return get_service
 
 
