@@ -23,4 +23,10 @@ def update_type_service(service_id, service, db: Session):
     db.refresh(get_service)
     return get_service
 
+def delete_type_service(service_id, db: Session):
+    get_service = db.query(TypeService).filter(TypeService.id==service_id).first()
+    db.delete(get_service)
+    db.commit()
+    return {"message": "Item deleted successfully!"}
+
 
