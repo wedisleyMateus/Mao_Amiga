@@ -25,9 +25,9 @@ async def create_service(
     return create_type_service(service, db)
 
 
-@app.get("/service/{service_id}", response_model=TypeServiceSchema)
-async def get_service(service_id: int, db: Session = Depends(get_db)):
-    return get_type_service(service_id, db)
+@app.get("/services/{service_name}", response_model=TypeServiceSchema)
+async def get_service(service_name: str, db: Session = Depends(get_db)):
+    return get_type_service(service_name, db)
 
 
 @app.put("/service/{service_id}", response_model=TypeServiceSchema)

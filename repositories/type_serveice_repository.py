@@ -1,4 +1,3 @@
-from typing import Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.models import TypeService
@@ -26,9 +25,14 @@ def create_type_service(service, db: Session):
         )
 
 
-def get_type_service(service_id, db: Session) -> Optional[int]:
-    service = db.query(TypeService).filter(TypeService.id == service_id).first()
-    return service
+def get_type_service(service_name, db: Session):
+    service = db.query(TypeService).filter(TypeService.name == service_name).first()
+    if service is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Serviço Inexistente"
+        )
+    else:
+        return service
 
 
 def update_type_service(service_id, service, db: Session):
