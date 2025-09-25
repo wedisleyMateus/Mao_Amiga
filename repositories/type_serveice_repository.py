@@ -8,6 +8,21 @@ def service_verification(service, db: Session):
 
 
 def get_service_name(service_name, db: Session):
+    while True:
+        try:
+            if int(service_name):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail="Valor não aceito"
+                )
+        except ValueError:
+            try:
+                if float(service_name):
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Valor não aceito",
+                    )
+            except ValueError:
+                break
     return db.query(TypeService).filter(TypeService.name == service_name).first()
 
 
