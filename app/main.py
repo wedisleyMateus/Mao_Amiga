@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from app.schemas.services import TypeServiceSchema, TypeServiceUpdateSchema
+from app.schemas.services import (
+    TypeServiceSchema,
+    TypeServiceUpdateSchema,
+    TypeServiceVerificationSchema,
+    TypeServiceCreateSchema,
+)
 from repositories.type_serveice_repository import (
     create_type_service,
     get_type_service,
@@ -13,8 +18,10 @@ from app.database import get_db
 app = FastAPI()
 
 
-@app.post("/service", response_model=TypeServiceSchema)
-async def create_service(service: TypeServiceSchema, db: Session = Depends(get_db)):
+@app.post("/service", response_model=TypeServiceVerificationSchema)
+async def create_service(
+    service: TypeServiceCreateSchema, db: Session = Depends(get_db)
+):
     return create_type_service(service, db)
 
 

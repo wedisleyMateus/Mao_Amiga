@@ -10,6 +10,15 @@ class TypeServiceSchema(BaseModel):
         from_attributes = True
 
 
+class TypeServiceVerificationSchema(BaseModel):
+    detail: str
+
+
+class TypeServiceCreateSchema(BaseModel):
+    name: str
+    service_value: float
+
+
 class TypeServiceUpdateSchema(BaseModel):
     nome: str
     service_value: float
