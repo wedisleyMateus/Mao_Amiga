@@ -7,6 +7,10 @@ def service_verification(service, db: Session):
     return db.query(TypeService).filter(TypeService.name == service.name).first()
 
 
+def get_service_name(service_name, db: Session):
+    return db.query(TypeService).filter(TypeService.name == service_name).first()
+
+
 def create_type_service(service, db: Session):
     if service_verification(service, db):
         return HTTPException(
@@ -25,8 +29,18 @@ def create_type_service(service, db: Session):
         )
 
 
+def get_all_service(db: Session):
+    all_services = db.query(TypeService).all()
+    if all_services is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Lista de Serviço Vazia!!!"
+        )
+    else:
+        return all_services
+
+
 def get_type_service(service_name, db: Session):
-    service = db.query(TypeService).filter(TypeService.name == service_name).first()
+    service = get_service_name(service_name, db)
     if service is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Serviço Inexistente"
@@ -35,8 +49,8 @@ def get_type_service(service_name, db: Session):
         return service
 
 
-def update_type_service(service_id, service, db: Session):
-    get_service = db.query(TypeService).filter(TypeService.id == service_id).first()
+def update_type_service(service_name, service, db: Session):
+    get_service = get_service_name(service_name, db)
     get_service.name = service.name
     get_service.service_value = service.service_value
     db.commit()
@@ -44,8 +58,8 @@ def update_type_service(service_id, service, db: Session):
     return get_service
 
 
-def delete_type_service(service_id, db: Session):
-    get_service = db.query(TypeService).filter(TypeService.id == service_id).first()
+def delete_type_service(service_name, db: Session):
+    get_service = get_service_name(service_name, db)
     db.delete(get_service)
     db.commit()
     return {"message": "Item deleted successfully!"}

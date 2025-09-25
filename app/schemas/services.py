@@ -20,5 +20,5 @@ class TypeServiceCreateSchema(BaseModel):
 
 
 class TypeServiceUpdateSchema(BaseModel):
-    nome: str
+    name: str
     service_value: float
