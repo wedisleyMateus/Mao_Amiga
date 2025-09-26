@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.models import TypeService
+from app.models.service_models import TypeService
 
 
 def service_verification(service, db: Session):
