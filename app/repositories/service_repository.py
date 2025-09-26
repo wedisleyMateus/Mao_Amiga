@@ -1,6 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.models.service_models import TypeService
+from app.models.service_model import TypeService
+from app.schemas.service_schema import TypeServiceSchema
 
 
 def service_verification(service_name, db: Session):
@@ -19,7 +20,7 @@ def create_type_service(service, db: Session):
         db.add(type_service)
         db.commit()
         db.refresh(type_service)
-        return type_service
+        return TypeServiceSchema.model_validate(type_service)
 
 
 def get_all_service(db: Session):

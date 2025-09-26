@@ -1,7 +1,7 @@
 from pydantic import BaseModel, field_validator
 
 
-class TypeServiceSchema(BaseModel):
+class ServiceSchema(BaseModel):
     id: int
     name: str
     service_value: float
@@ -10,7 +10,7 @@ class TypeServiceSchema(BaseModel):
         from_attributes = True
 
 
-class TypeServiceVerificationSchema(BaseModel):
+class ServiceVerificationSchema(BaseModel):
     name: str
     service_value: float
 
