@@ -5,7 +5,7 @@ from app.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
 )
-from app.repositories.service_repository import ServiceRepository
+from app.repositories.service_repository import ServiceRepository, VerificationWithName
 from app.service_layer.service_layer import ServiceLayer
 from app.core.database import get_db
 
@@ -33,7 +33,8 @@ async def get_services(db: Session = Depends(get_db)) -> List[ServiceSchema]:
 async def get_service(
     service_name: str, db: Session = Depends(get_db)
 ) -> ServiceSchema:
-    services = ServiceRepository(db)
+    verification = VerificationWithName(db)
+    services = ServiceRepository(db, verification)
     return services.get_service(service_name)
 
 
@@ -43,11 +44,13 @@ async def update_service(
     service: ServiceVerificationSchema,
     db: Session = Depends(get_db),
 ) -> ServiceSchema:
-    services = ServiceRepository(db)
+    verification = VerificationWithName(db)
+    services = ServiceRepository(db, verification)
     return services.update_service(service_name, service)
 
 
 @router.delete("/{service_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_service(service_name: str, db: Session = Depends(get_db)):
-    services = ServiceRepository(db)
+    verification = VerificationWithName(db)
+    services = ServiceRepository(db, verification)
     return services.delete_service(service_name)

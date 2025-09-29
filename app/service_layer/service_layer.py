@@ -1,12 +1,13 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.repositories.service_repository import ServiceRepository
+from app.repositories.service_repository import ServiceRepository, VerificationWithName
 from app.schemas.service_schema import ServiceSchema
 
 
 class ServiceLayer:
     def __init__(self, db: Session):
-        self.repository = ServiceRepository(db)
+        self.verification = VerificationWithName(db)
+        self.repository = ServiceRepository(db, self.verification)
 
     def existence_verification(self, data: ServiceSchema):
         if self.repository.service_verification(data.name):
