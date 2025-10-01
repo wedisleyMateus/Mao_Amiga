@@ -10,7 +10,7 @@ class ServiceLayer:
         self.repository = ServiceRepository(db, self.verification)
 
     def existence_verification(self, data: ServiceSchema):
-        if self.repository.service_verification(data.name):
+        if self.verification.service_verification(data.name):
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT, detail="Serviço já Existente"
             )

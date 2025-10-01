@@ -2,11 +2,16 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import Column, String, Integer, Numeric
+from starlette.testclient import TestClient
+
+from app.core.database import get_db
+from app.main import app
 
 DATABASE_TEST_URL = "sqlite+pysqlite:///:memory:"
 
 engine = create_engine(DATABASE_TEST_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+connection = engine.connect()
+TestingSessionLocal = sessionmaker(bind=connection, autoflush=False, autocommit=False)
 Base = declarative_base()
 
 
@@ -20,9 +25,10 @@ class Service(Base):
 
 @pytest.fixture(scope="session", autouse=True)
 def criando_test_db():
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=connection)
     yield
-    Base.metadata.drop_all(bind=engine)
+    Base.metadata.drop_all(bind=connection)
+    connection.close()
 
 
 @pytest.fixture
@@ -32,3 +38,14 @@ def db():
         yield session
     finally:
         session.close()
+
+
+@pytest.fixture
+def override_get_db(db):
+    def override():
+        yield db
+
+    app.dependency_overrides[get_db] = override
+    client = TestClient(app)
+    yield client
+    app.dependency_overrides.clear()

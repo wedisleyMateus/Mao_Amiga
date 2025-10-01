@@ -1,19 +1,20 @@
-from fastapi.testclient import TestClient
-from app.main import app
+def test_url_create_service(override_get_db):
+    api = override_get_db.post(
+        "/services", json={"name": "Pintura Acrilica", "service_value": 120.5}
+    )
+    assert api.status_code == 201
 
-client = TestClient(app)
 
-
-def test_url_get_service():
-    api = client.get("/services/Pintura Acrilica")
+def test_url_get_service(override_get_db):
+    api = override_get_db.get("/services/Pintura Acrilica")
     assert api.status_code == 200
     assert api.json() == {"id": 1, "name": "Pintura Acrilica", "service_value": 120.5}
 
 
-def test_url_update():
-    api = client.put(
+def test_url_update(override_get_db):
+    api = override_get_db.put(
         "/services/Pintura Acrilica",
-        json={"name": "Pintura Acrilica", "service_value": 120.5},
+        json={"name": "Pintura Acrilica", "service_value": 120.20},
     )
     assert api.status_code == 200
-    assert api.json() == {"id": 1, "name": "Pintura Acrilica", "service_value": 120.5}
+    assert api.json() == {"id": 1, "name": "Pintura Acrilica", "service_value": 120.2}
