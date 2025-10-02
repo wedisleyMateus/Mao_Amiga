@@ -1,5 +1,11 @@
 import pytest
-from app.api.service_api import create_service, get_services, get_service
+from app.api.service_api import (
+    create_service,
+    get_services,
+    get_service,
+    update_service,
+    delete_service,
+)
 from fastapi import HTTPException
 from app.schemas.service_schema import ServiceVerificationSchema
 from app.repositories.service_repository import VerificationWithName
@@ -79,3 +85,47 @@ async def test_get_service(mocker):
 
     resultado = await get_service(service_name, mock_db)
     assert resultado == data
+
+
+@pytest.mark.asyncio
+async def test_update_service(mocker):
+    service_name = "Pintura Acrilica"
+    data = ServiceVerificationSchema(name="Pintura Acrilica", service_value=120.3)
+
+    mock_db = mocker.Mock()
+    mock_verification = mocker.Mock(spec=VerificationWithName)
+
+    mock_service = mocker.Mock()
+    mock_service.update_service.return_value = data
+
+    mocker.patch(
+        "app.api.service_api.VerificationWithName", return_value=mock_verification
+    )
+    mocker.patch("app.api.service_api.ServiceRepository", return_value=mock_service)
+
+    resultado = await update_service(service_name, data, mock_db)
+    assert resultado == data
+
+
+@pytest.mark.asyncio
+async def test_delete_service(mocker):
+    service_name = "Pintura Normal"
+
+    mock_db = mocker.Mock()
+    mock_verification = mocker.Mock(spec=VerificationWithName)
+
+    mock_service = mocker.Mock()
+    mock_service.delete_service.side_effect = HTTPException(
+        status_code=204, detail="Serviço deletado com sucesso"
+    )
+
+    mocker.patch(
+        "app.api.service_api.VerificationWithName", return_value=mock_verification
+    )
+    mocker.patch("app.api.service_api.ServiceRepository", return_value=mock_service)
+
+    with pytest.raises(HTTPException) as excecao:
+        await delete_service(service_name, mock_db)
+
+    assert excecao.value.status_code == 204
+    assert excecao.value.detail == "Serviço deletado com sucesso"
