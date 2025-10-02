@@ -1,7 +1,8 @@
 import pytest
-from app.api.service_api import create_service
+from app.api.service_api import create_service, get_services, get_service
 from fastapi import HTTPException
 from app.schemas.service_schema import ServiceVerificationSchema
+from app.repositories.service_repository import VerificationWithName
 
 
 @pytest.mark.asyncio
@@ -37,3 +38,44 @@ async def test_create_service_existing(mocker):
 
     assert excecao.value.status_code == 409
     assert excecao.value.detail == "Serviço já existente"
+
+
+@pytest.mark.asyncio
+async def test_get_service_all(mocker):
+    data_list = [
+        {"id": 1, "name": "Pintura Acrilica", "service_value": 120.2},
+        {"id": 2, "name": "Pintura Normal", "service_value": 40},
+    ]
+
+    mock_db = mocker.Mock()
+    mock_service_layer = mocker.Mock()
+    mock_service_layer.list_validation.return_value = data_list
+
+    mocker.patch("app.api.service_api.ServiceLayer", return_value=mock_service_layer)
+
+    resultado = await get_services(mock_db)
+    assert resultado == [
+        {"id": 1, "name": "Pintura Acrilica", "service_value": 120.2},
+        {"id": 2, "name": "Pintura Normal", "service_value": 40},
+    ]
+    mock_service_layer.list_validation.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_get_service(mocker):
+    service_name = "Pintura Acrilica"
+    data = {"id": 1, "name": service_name, "service_value": 120.2}
+
+    mock_db = mocker.Mock()
+    mock_verification = mocker.Mock(spec=VerificationWithName)
+    mock_service = mocker.Mock()
+
+    mocker.patch(
+        "app.api.service_api.VerificationWithName", return_value=mock_verification
+    )
+    mocker.patch("app.api.service_api.ServiceRepository", return_value=mock_service)
+
+    mock_service.get_service.return_value = data
+
+    resultado = await get_service(service_name, mock_db)
+    assert resultado == data
