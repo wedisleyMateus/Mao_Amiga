@@ -1,20 +1,22 @@
 import pytest
 from decimal import Decimal
 from fastapi import HTTPException, status
-from app.repositories.service_repository import VerificationWithName
-from app.schemas.service_schema import ServiceCalculationSchema
+from app.repositories.service_repository import ServiceVerificationByName
+from app.schemas.service_schema import ServiceCalculationRequest
 from app.service_layer.service_layer import ServiceLayer
 
 
 def test_calculation(mocker):
-    data = ServiceCalculationSchema(name="Pintura Acrilica", square_meter=Decimal("20"))
+    data = ServiceCalculationRequest(
+        name="Pintura Acrilica", square_meter=Decimal("20")
+    )
     mock_db = mocker.Mock()
 
     mock_service_obj = mocker.Mock()
     mock_service_obj.name = "Pintura Acrilica"
     mock_service_obj.service_value = Decimal("120.5")
 
-    mock_verification = mocker.Mock(spec=VerificationWithName)
+    mock_verification = mocker.Mock(spec=ServiceVerificationByName)
     mock_verification.service_verification.return_value = mock_service_obj
 
     service_layer = ServiceLayer(mock_db)
@@ -32,7 +34,7 @@ def test_calculation_exception(mocker):
 
     mock_db = mocker.Mock()
 
-    mock_verification = mocker.Mock(spec=VerificationWithName)
+    mock_verification = mocker.Mock(spec=ServiceVerificationByName)
     mock_verification.service_verification.side_effect = HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Serviço '{mock_data.name}' não encontrado",

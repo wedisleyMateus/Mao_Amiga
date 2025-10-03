@@ -57,7 +57,7 @@ class ServiceLayer:
             - 'square_meter' = valor do metro quadrado
 
         Raises:
-            ServiceNotFoundError:  serviço não for encontrado
+            ServiceNotFoundError: serviço não for encontrado
 
         Returns:
             ServiceCalculationResponseSchema: Objeto com todas as informações
