@@ -4,9 +4,12 @@ from sqlalchemy.orm import Session
 from app.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
+    ServiceCalculationSchema,
+    ServiceCalculationResponseSchema,
 )
 from app.repositories.service_repository import ServiceRepository, VerificationWithName
 from app.service_layer.service_layer import ServiceLayer
+from app.service_layer.calculation_layer import squared_calculation
 from app.core.database import get_db
 
 
@@ -54,3 +57,12 @@ async def delete_service(service_name: str, db: Session = Depends(get_db)):
     verification = VerificationWithName(db)
     services = ServiceRepository(db, verification)
     return services.delete_service(service_name)
+
+
+@router.post("/calculation", response_model=ServiceCalculationResponseSchema)
+async def service_calculation(
+    data: ServiceCalculationSchema, db: Session = Depends(get_db)
+):
+    verification = VerificationWithName(db)
+    total = squared_calculation(data, verification)
+    return total

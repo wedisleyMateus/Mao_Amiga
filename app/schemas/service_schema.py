@@ -23,3 +23,15 @@ class ServiceVerificationSchema(BaseModel):
             raise ValueError("Valor não Aceito")
         else:
             return v
+
+
+class ServiceCalculationSchema(BaseModel):
+    name: str
+    square_meter: float
+
+
+class ServiceCalculationResponseSchema(BaseModel):
+    name: str
+    service_value: float
+    square_meter: float
+    total: float
