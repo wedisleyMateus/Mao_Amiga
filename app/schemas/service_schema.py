@@ -27,16 +27,16 @@ class ServiceVerificationSchema(BaseModel):
             return v
 
 
-class ServiceCalculationSchema(BaseModel):
+class ServiceCalculationRequest(BaseModel):
     name: str
     square_meter: Decimal
 
 
-class ServiceCalculationResponseSchema(BaseModel):
+class ServiceCalculationResponse(BaseModel):
     name: str
     service_value: Decimal
     square_meter: Decimal
     total: Decimal
 
     class Config:
-        orm_mode = True
+        from_attributes = True

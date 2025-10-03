@@ -1,38 +1,53 @@
-from fastapi import HTTPException, status
 from decimal import Decimal
 from sqlalchemy.orm import Session
-from app.repositories.service_repository import ServiceRepository, VerificationWithName
+from app.repositories.service_repository import (
+    ServiceRepository,
+    ServiceVerificationByName,
+)
 from app.schemas.service_schema import (
     ServiceSchema,
-    ServiceCalculationSchema,
-    ServiceCalculationResponseSchema,
+    ServiceCalculationRequest,
+    ServiceCalculationResponse,
 )
+
+
+class ServiceNotFoundError(Exception):
+    """Erro quando o serviço não é encontrado"""
+
+    pass
+
+
+class ServiceAlreadyExistsError(Exception):
+    """Erro quando o serviço já existe no sistema"""
+
+    pass
+
+
+class ServiceListEmptyError(Exception):
+    """Erro quando a lista de serviços está vazia"""
+
+    pass
 
 
 class ServiceLayer:
     def __init__(self, db: Session):
-        self.verification = VerificationWithName(db)
+        self.verification = ServiceVerificationByName(db)
         self.repository = ServiceRepository(db, self.verification)
 
     def existence_verification(self, data: ServiceSchema):
         if self.verification.service_verification(data.name):
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT, detail="Serviço já Existente"
-            )
+            raise ServiceAlreadyExistsError()
         else:
             return self.repository.create_service(data)
 
     def list_validation(self):
         list_service = self.repository.get_all_service()
         if not list_service:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Lista de Serviço Vazia!!!",
-            )
+            raise ServiceListEmptyError()
         else:
             return list_service
 
-    def calculate_service_total(self, data: ServiceCalculationSchema):
+    def calculate_service_total(self, data: ServiceCalculationRequest):
         """
         Calcula o valor total do serviço por metro quadrado
 
@@ -42,21 +57,18 @@ class ServiceLayer:
             - 'square_meter' = valor do metro quadrado
 
         Raises:
-            HTTPException: 404 se o serviço não for encontrado
+            ServiceNotFoundError:  serviço não for encontrado
 
         Returns:
             ServiceCalculationResponseSchema: Objeto com todas as informações
-            do serviço,incluindo o total do serviço
+            do serviço e incluindo o total do serviço
         """
         service = self.verification.service_verification(data.name)
         if service is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Serviço '{data.name}' não encontrado ",
-            )
+            raise ServiceNotFoundError()
         else:
             calculation = service.service_value * Decimal(str(data.square_meter))
-            return ServiceCalculationResponseSchema(
+            return ServiceCalculationResponse(
                 name=service.name,
                 service_value=service.service_value,
                 square_meter=data.square_meter,

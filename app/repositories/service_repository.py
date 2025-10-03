@@ -13,7 +13,7 @@ class VerificationInterface(ABC):
         pass
 
 
-class VerificationWithName(VerificationInterface):
+class ServiceVerificationByName(VerificationInterface):
     def service_verification(self, data):
         return self.db.query(TypeService).filter(TypeService.name == data).first()
 
