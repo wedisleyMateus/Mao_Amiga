@@ -1,9 +1,9 @@
 import pytest
 from decimal import Decimal
-from fastapi import HTTPException, status
 from app.repositories.service_repository import ServiceVerificationByName
 from app.schemas.service_schema import ServiceCalculationRequest
 from app.service_layer.service_layer import ServiceLayer
+from app.service_layer.service_layer import ServiceNotFoundError
 
 
 def test_calculation(mocker):
@@ -35,16 +35,10 @@ def test_calculation_exception(mocker):
     mock_db = mocker.Mock()
 
     mock_verification = mocker.Mock(spec=ServiceVerificationByName)
-    mock_verification.service_verification.side_effect = HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Serviço '{mock_data.name}' não encontrado",
-    )
+    mock_verification.service_verification.side_effect = ServiceNotFoundError
 
     service_layer = ServiceLayer(mock_db)
     service_layer.verification = mock_verification
 
-    with pytest.raises(HTTPException) as excecao:
+    with pytest.raises(ServiceNotFoundError):
         service_layer.calculate_service_total(mock_data)
-
-    assert excecao.value.status_code == status.HTTP_404_NOT_FOUND
-    assert excecao.value.detail == "Serviço '' não encontrado"
