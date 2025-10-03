@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pydantic import BaseModel, field_validator
 
 
@@ -27,11 +29,14 @@ class ServiceVerificationSchema(BaseModel):
 
 class ServiceCalculationSchema(BaseModel):
     name: str
-    square_meter: float
+    square_meter: Decimal
 
 
 class ServiceCalculationResponseSchema(BaseModel):
     name: str
-    service_value: float
-    square_meter: float
-    total: float
+    service_value: Decimal
+    square_meter: Decimal
+    total: Decimal
+
+    class Config:
+        orm_mode = True
