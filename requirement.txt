@@ -12,3 +12,4 @@ cryptography==46.0.1
 alembic==1.16.5
 pydantic-settings==2.10.1
 pre-commit==4.3.0
+pytest=8.4.2
