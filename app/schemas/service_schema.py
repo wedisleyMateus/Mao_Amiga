@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from pydantic import BaseModel, field_validator
 
 
@@ -23,3 +25,18 @@ class ServiceVerificationSchema(BaseModel):
             raise ValueError("Valor não Aceito")
         else:
             return v
+
+
+class ServiceCalculationRequest(BaseModel):
+    name: str
+    square_meter: Decimal
+
+
+class ServiceCalculationResponse(BaseModel):
+    name: str
+    service_value: Decimal
+    square_meter: Decimal
+    total: Decimal
+
+    class Config:
+        from_attributes = True
