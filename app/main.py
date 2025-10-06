@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from .api import service_api
+from app.api import service_api, client_api
 
 app = FastAPI()
 
 app.include_router(service_api.router)
+app.include_router(client_api.router)
