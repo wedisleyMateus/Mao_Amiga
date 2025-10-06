@@ -1,9 +1,6 @@
 from fastapi import FastAPI
-from schemas.services import TypeService
+from .api import service_api
 
 app = FastAPI()
 
-
-@app.post("/service")
-async def service(post_service: TypeService):
-    return post_service
+app.include_router(service_api.router)
