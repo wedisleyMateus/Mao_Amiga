@@ -19,6 +19,7 @@ from app.service_layer.service_layer import (
     ServiceListEmptyError,
 )
 from app.core.database import get_db
+from auth import verify_token
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,9 @@ router = APIRouter(prefix="/services", tags=["Services"])
     "/", response_model=ServiceVerificationSchema, status_code=status.HTTP_201_CREATED
 )
 async def create_service(
-    data: ServiceVerificationSchema, db: Session = Depends(get_db)
+    data: ServiceVerificationSchema,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(verify_token)
 ) -> ServiceVerificationSchema:
     try:
         service = ServiceLayer(db)
@@ -41,7 +44,10 @@ async def create_service(
 
 
 @router.get("/", response_model=List[ServiceSchema])
-async def get_services(db: Session = Depends(get_db)) -> List[ServiceSchema]:
+async def get_services(
+        db: Session = Depends(get_db),
+        user_id: int = Depends(verify_token)
+) -> List[ServiceSchema]:
     try:
         services = ServiceLayer(db)
         return services.list_validation()
@@ -51,7 +57,9 @@ async def get_services(db: Session = Depends(get_db)) -> List[ServiceSchema]:
 
 @router.get("/{service_name}", response_model=ServiceSchema)
 async def get_service(
-    service_name: str, db: Session = Depends(get_db)
+    service_name: str,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(verify_token)
 ) -> ServiceSchema:
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
@@ -63,6 +71,7 @@ async def update_service(
     service_name: str,
     service: ServiceVerificationSchema,
     db: Session = Depends(get_db),
+    user_id: int = Depends(verify_token)
 ) -> ServiceSchema:
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
@@ -70,7 +79,11 @@ async def update_service(
 
 
 @router.delete("/{service_name}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_service(service_name: str, db: Session = Depends(get_db)):
+async def delete_service(
+        service_name: str,
+        db: Session = Depends(get_db),
+        user_id: int = Depends(verify_token)
+):
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
     return services.delete_service(service_name)
@@ -78,7 +91,9 @@ async def delete_service(service_name: str, db: Session = Depends(get_db)):
 
 @router.post("/calculation", response_model=ServiceCalculationResponse)
 async def service_calculation(
-    data: ServiceCalculationRequest, db: Session = Depends(get_db)
+    data: ServiceCalculationRequest,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(verify_token)
 ) -> ServiceCalculationResponse:
     service = ServiceLayer(db)
     try:
