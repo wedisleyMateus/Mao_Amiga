@@ -35,7 +35,7 @@ async def create_service(
     try:
         service = ServiceLayer(db)
         result = service.existence_verification(data)
-        logger.info(f"Service {data.name} successfully registered")
+        logger.info(f"Service {data.name} successfully registered by user {user_id}")
         return result
     except ServiceAlreadyExistsError:
         logger.warning(f"Service {data.name} already exists")
@@ -50,7 +50,7 @@ async def get_services(
     try:
         services = ServiceLayer(db)
         result = services.list_validation()
-        logger.info(f"List found with values")
+        logger.info(f"List found with values by user {user_id}")
         return result
     except ServiceListEmptyError:
         logger.warning(f"The list is currently empty")
@@ -66,7 +66,7 @@ async def get_service(
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
     result = services.get_service(service_name)
-    logger.info(f"Service '{service_name}' retrieved successfully")
+    logger.info(f"Service '{service_name}' retrieved successfully by user {user_id}")
     return result
 
 
@@ -80,7 +80,7 @@ async def update_service(
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
     result = services.update_service(service_name, service)
-    logger.info(f"Service '{service_name}' updated successfully")
+    logger.info(f"Service '{service_name}' updated successfully by user {user_id}")
     return result
 
 
@@ -93,7 +93,7 @@ async def delete_service(
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
     result = services.delete_service(service_name)
-    logger.info(f"Service '{service_name}' deleted successfully")
+    logger.info(f"Service '{service_name}' deleted successfully by user {user_id}")
     return result
 
 
