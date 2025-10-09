@@ -1,6 +1,5 @@
 from fastapi import Depends, APIRouter, status, HTTPException
 from typing import List
-import logging
 from sqlalchemy.orm import Session
 from app.schemas.service_schema import (
     ServiceSchema,
@@ -20,9 +19,7 @@ from app.service_layer.service_layer import (
 )
 from app.core.database import get_db
 from auth import verify_token
-
-
-logger = logging.getLogger(__name__)
+from app.logger_config import logger
 
 router = APIRouter(prefix="/services", tags=["Services"])
 
@@ -37,7 +34,9 @@ async def create_service(
 ) -> ServiceVerificationSchema:
     try:
         service = ServiceLayer(db)
-        return service.existence_verification(data)
+        result = service.existence_verification(data)
+        logger.info(f"Service {data.name} successfully registered")
+        return result
     except ServiceAlreadyExistsError:
         logger.warning(f"Service {data.name} already exists")
         raise HTTPException(status_code=409, detail="Serviço já Existente")
@@ -50,8 +49,11 @@ async def get_services(
 ) -> List[ServiceSchema]:
     try:
         services = ServiceLayer(db)
-        return services.list_validation()
+        result = services.list_validation()
+        logger.info(f"List found with values")
+        return result
     except ServiceListEmptyError:
+        logger.warning(f"The list is currently empty")
         raise HTTPException(status_code=404, detail="Service list is empty")
 
 
@@ -63,7 +65,9 @@ async def get_service(
 ) -> ServiceSchema:
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
-    return services.get_service(service_name)
+    result = services.get_service(service_name)
+    logger.info(f"Service '{service_name}' retrieved successfully")
+    return result
 
 
 @router.put("/{service_name}", response_model=ServiceSchema)
@@ -75,7 +79,9 @@ async def update_service(
 ) -> ServiceSchema:
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
-    return services.update_service(service_name, service)
+    result = services.update_service(service_name, service)
+    logger.info(f"Service '{service_name}' updated successfully")
+    return result
 
 
 @router.delete("/{service_name}", status_code=status.HTTP_204_NO_CONTENT)
@@ -86,7 +92,9 @@ async def delete_service(
 ):
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
-    return services.delete_service(service_name)
+    result = services.delete_service(service_name)
+    logger.info(f"Service '{service_name}' deleted successfully")
+    return result
 
 
 @router.post("/calculation", response_model=ServiceCalculationResponse)
@@ -97,7 +105,9 @@ async def service_calculation(
 ) -> ServiceCalculationResponse:
     service = ServiceLayer(db)
     try:
-        return service.calculate_service_total(data)
+        result = service.calculate_service_total(data)
+        logger.info(f"Service calculation for '{data.name}' completed successfully")
+        return result
     except ServiceNotFoundError:
         logger.warning(f"Service {data.name} not found")
         raise HTTPException(status_code=404, detail="Serviço não encontrado")
