@@ -9,6 +9,7 @@ from app.core.database import Base
 
 # from app.models.service_model import TypeService
 # from app.models.client_model import Clients
+# from app.models.login_model import Login
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
