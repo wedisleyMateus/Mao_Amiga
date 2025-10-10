@@ -1,7 +1,0 @@
-
-
-class ClientNotExistError(Exception):
-    pass
-
-
-

@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, Numeric
-from app.core.database import Base
+from app.infrastructure.conection import Base
 
 
 class Service(Base):

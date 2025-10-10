@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.core.database import Base
+from app.infrastructure.conection import Base
 
 # from app.models.service_model import Service
 # from app.models.client_model import Clients
