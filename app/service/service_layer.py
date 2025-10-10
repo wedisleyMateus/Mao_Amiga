@@ -6,7 +6,6 @@ from app.repositories.service_repository import (
     GetAllServices,
 )
 from app.schemas.service_schema import (
-    ServiceSchema,
     ServiceCalculationRequest,
     ServiceCalculationResponse,
 )
@@ -29,7 +28,7 @@ class  ServiceCreator:
         self.verification = ServiceBase(db)
         self.repository = CreateService(db)
 
-    def existence_verification(self, data: ServiceSchema):
+    def existence_verification(self, data):
         if self.verification.query_service(data.name):
             raise ServiceAlreadyExistsError()
         else:

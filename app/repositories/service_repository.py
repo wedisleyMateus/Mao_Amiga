@@ -23,7 +23,7 @@ class CreateService:
         self.db = db
 
     def create_service(self, data):
-        type_service = Service(name=data.name, value=data.service_value)
+        type_service = Service(name=data.name, value=data.value)
         self.db.add(type_service)
         self.db.commit()
         self.db.refresh(type_service)
