@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer
 from app.core.database import Base
 
+
 class Login(Base):
     __tablename__ = "login"
     id = Column(Integer, primary_key=True, nullable=False)

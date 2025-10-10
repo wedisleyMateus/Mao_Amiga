@@ -1,6 +1,5 @@
 from fastapi import Depends, APIRouter, status, HTTPException
 from typing import List
-import logging
 from sqlalchemy.orm import Session
 from app.schemas.service_schema import (
     ServiceSchema,
@@ -12,7 +11,7 @@ from app.repositories.service_repository import (
     ServiceRepository,
     ServiceVerificationByName,
 )
-from app.service_layer.service_layer import (
+from app.service.service_layer import (
     ServiceLayer,
     ServiceNotFoundError,
     ServiceAlreadyExistsError,
@@ -20,9 +19,7 @@ from app.service_layer.service_layer import (
 )
 from app.core.database import get_db
 from auth import verify_token
-
-
-logger = logging.getLogger(__name__)
+from app.logger_config import logger
 
 router = APIRouter(prefix="/services", tags=["Services"])
 
@@ -33,11 +30,13 @@ router = APIRouter(prefix="/services", tags=["Services"])
 async def create_service(
     data: ServiceVerificationSchema,
     db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token)
+    user_id: int = Depends(verify_token),
 ) -> ServiceVerificationSchema:
     try:
         service = ServiceLayer(db)
-        return service.existence_verification(data)
+        result = service.existence_verification(data)
+        logger.info(f"Service {data.name} successfully registered by user {user_id}")
+        return result
     except ServiceAlreadyExistsError:
         logger.warning(f"Service {data.name} already exists")
         raise HTTPException(status_code=409, detail="Serviço já Existente")
@@ -45,13 +44,15 @@ async def create_service(
 
 @router.get("/", response_model=List[ServiceSchema])
 async def get_services(
-        db: Session = Depends(get_db),
-        user_id: int = Depends(verify_token)
+    db: Session = Depends(get_db), user_id: int = Depends(verify_token)
 ) -> List[ServiceSchema]:
     try:
         services = ServiceLayer(db)
-        return services.list_validation()
+        result = services.list_validation()
+        logger.info(f"List found with values by user {user_id}")
+        return result
     except ServiceListEmptyError:
+        logger.warning("The list is currently empty")
         raise HTTPException(status_code=404, detail="Service list is empty")
 
 
@@ -59,11 +60,13 @@ async def get_services(
 async def get_service(
     service_name: str,
     db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token)
+    user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
-    return services.get_service(service_name)
+    result = services.get_service(service_name)
+    logger.info(f"Service '{service_name}' retrieved successfully by user {user_id}")
+    return result
 
 
 @router.put("/{service_name}", response_model=ServiceSchema)
@@ -71,33 +74,39 @@ async def update_service(
     service_name: str,
     service: ServiceVerificationSchema,
     db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token)
+    user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
-    return services.update_service(service_name, service)
+    result = services.update_service(service_name, service)
+    logger.info(f"Service '{service_name}' updated successfully by user {user_id}")
+    return result
 
 
 @router.delete("/{service_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_service(
-        service_name: str,
-        db: Session = Depends(get_db),
-        user_id: int = Depends(verify_token)
+    service_name: str,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(verify_token),
 ):
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
-    return services.delete_service(service_name)
+    result = services.delete_service(service_name)
+    logger.info(f"Service '{service_name}' deleted successfully by user {user_id}")
+    return result
 
 
 @router.post("/calculation", response_model=ServiceCalculationResponse)
 async def service_calculation(
     data: ServiceCalculationRequest,
     db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token)
+    user_id: int = Depends(verify_token),
 ) -> ServiceCalculationResponse:
     service = ServiceLayer(db)
     try:
-        return service.calculate_service_total(data)
+        result = service.calculate_service_total(data)
+        logger.info(f"Service calculation for '{data.name}' completed successfully")
+        return result
     except ServiceNotFoundError:
         logger.warning(f"Service {data.name} not found")
         raise HTTPException(status_code=404, detail="Serviço não encontrado")

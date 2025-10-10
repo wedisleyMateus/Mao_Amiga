@@ -5,3 +5,5 @@ __pychache__/
 *.pyc
 pytest_cache/
 mypy_cache/
+logs/
+*.log

@@ -7,7 +7,7 @@ from alembic import context
 
 from app.core.database import Base
 
-# from app.models.service_model import TypeService
+# from app.models.service_model import Service
 # from app.models.client_model import Clients
 # from app.models.login_model import Login
 

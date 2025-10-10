@@ -1,12 +1,12 @@
 from pydantic import BaseModel
 
+
 class LoginRegisterRequest(BaseModel):
     username: str
     password: str
 
 
 class LoginRegisterResponse(BaseModel):
-
     username: str
 
     class Config:
@@ -16,4 +16,3 @@ class LoginRegisterResponse(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str
-
