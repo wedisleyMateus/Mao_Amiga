@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import Column, String, Integer, Numeric
 from starlette.testclient import TestClient
 
-from app.core.database import get_db
+from app.infrastructure.conection import get_db
 from app.main import app
 
 DATABASE_TEST_URL = "sqlite+pysqlite:///:memory:"

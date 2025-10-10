@@ -12,7 +12,7 @@ from app.repositories.service_repository import (
     DeleteService,
     UpdateService,
 )
-from app.service.service_layer import (
+from app.services.service import (
     ServiceCreator,
     ServiceLister,
     ServiceCalculator,
@@ -20,7 +20,7 @@ from app.service.service_layer import (
     ServiceAlreadyExistsError,
     ServiceListEmptyError,
 )
-from app.core.database import get_db
+from app.infrastructure.conection import get_db
 from auth import verify_token
 from app.logger_config import logger
 
