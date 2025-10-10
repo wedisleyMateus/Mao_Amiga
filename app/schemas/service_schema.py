@@ -6,7 +6,7 @@ from pydantic import BaseModel, field_validator
 class ServiceSchema(BaseModel):
     id: int
     name: str
-    service_value: float
+    value: float
 
     class Config:
         from_attributes = True
@@ -14,7 +14,7 @@ class ServiceSchema(BaseModel):
 
 class ServiceVerificationSchema(BaseModel):
     name: str
-    service_value: float
+    value: float
 
     @field_validator("name", mode="before")
     @classmethod

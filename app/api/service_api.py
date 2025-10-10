@@ -8,11 +8,14 @@ from app.schemas.service_schema import (
     ServiceCalculationResponse,
 )
 from app.repositories.service_repository import (
-    ServiceRepository,
-    ServiceVerificationByName,
+    GetService,
+    DeleteService,
+    UpdateService,
 )
 from app.service.service_layer import (
-    ServiceLayer,
+    ServiceCreator,
+    ServiceLister,
+    ServiceCalculator,
     ServiceNotFoundError,
     ServiceAlreadyExistsError,
     ServiceListEmptyError,
@@ -33,7 +36,7 @@ async def create_service(
     user_id: int = Depends(verify_token),
 ) -> ServiceVerificationSchema:
     try:
-        service = ServiceLayer(db)
+        service = ServiceCreator(db)
         result = service.existence_verification(data)
         logger.info(f"Service {data.name} successfully registered by user {user_id}")
         return result
@@ -47,8 +50,8 @@ async def get_services(
     db: Session = Depends(get_db), user_id: int = Depends(verify_token)
 ) -> List[ServiceSchema]:
     try:
-        services = ServiceLayer(db)
-        result = services.list_validation()
+        services = ServiceLister(db)
+        result = services.list_verification()
         logger.info(f"List found with values by user {user_id}")
         return result
     except ServiceListEmptyError:
@@ -62,9 +65,8 @@ async def get_service(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
-    verification = ServiceVerificationByName(db)
-    services = ServiceRepository(db, verification)
-    result = services.get_service(service_name)
+    service = GetService(db)
+    result = service.get_service(service_name)
     logger.info(f"Service '{service_name}' retrieved successfully by user {user_id}")
     return result
 
@@ -76,9 +78,8 @@ async def update_service(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
-    verification = ServiceVerificationByName(db)
-    services = ServiceRepository(db, verification)
-    result = services.update_service(service_name, service)
+    service = UpdateService(db)
+    result = service.update_service(service_name, service)
     logger.info(f"Service '{service_name}' updated successfully by user {user_id}")
     return result
 
@@ -89,9 +90,8 @@ async def delete_service(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    verification = ServiceVerificationByName(db)
-    services = ServiceRepository(db, verification)
-    result = services.delete_service(service_name)
+    service = DeleteService(db)
+    result = service.delete_service(service_name)
     logger.info(f"Service '{service_name}' deleted successfully by user {user_id}")
     return result
 
@@ -102,7 +102,7 @@ async def service_calculation(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceCalculationResponse:
-    service = ServiceLayer(db)
+    service = ServiceCalculator(db)
     try:
         result = service.calculate_service_total(data)
         logger.info(f"Service calculation for '{data.name}' completed successfully")
