@@ -1,8 +1,9 @@
 from decimal import Decimal
 from sqlalchemy.orm import Session
 from app.repositories.service_repository import (
-    ServiceRepository,
-    ServiceVerificationByName,
+    ServiceBase,
+    CreateService,
+    GetAllServices,
 )
 from app.schemas.service_schema import (
     ServiceSchema,
@@ -12,58 +13,50 @@ from app.schemas.service_schema import (
 
 
 class ServiceNotFoundError(Exception):
-    """Erro quando o serviço não é encontrado"""
-
     pass
 
 
 class ServiceAlreadyExistsError(Exception):
-    """Erro quando o serviço já existe no sistema"""
-
     pass
 
 
 class ServiceListEmptyError(Exception):
-    """Erro quando a lista de serviços está vazia"""
-
     pass
 
 
-class ServiceLayer:
+class  ServiceCreator:
     def __init__(self, db: Session):
-        self.verification = ServiceVerificationByName(db)
-        self.repository = ServiceRepository(db, self.verification)
+        self.verification = ServiceBase(db)
+        self.repository = CreateService(db)
 
     def existence_verification(self, data: ServiceSchema):
-        if self.verification.service_verification(data.name):
+        if self.verification.query_service(data.name):
             raise ServiceAlreadyExistsError()
         else:
             return self.repository.create_service(data)
 
-    def list_validation(self):
-        list_service = self.repository.get_all_service()
+
+class ServiceLister:
+    def __init__(self, db: Session):
+        self.repository = GetAllServices(db)
+
+
+    def list_verification(self):
+        list_service = self.repository.get_all_services()
         if not list_service:
-            raise ServiceListEmptyError()
+            raise ServiceNotFoundError()
         else:
             return list_service
 
+
+class ServiceCalculator:
+    def __init__(self, db: Session):
+        self.verification = ServiceBase(db)
+        self.repository = CreateService(db)
+
     def calculate_service_total(self, data: ServiceCalculationRequest):
-        """
-        Calcula o valor total do serviço por metro quadrado
 
-        Args:
-            data(ServiceCalculationSchema): Contem os dados de entrada:
-            - 'name' = Nome do serviço e
-            - 'square_meter' = valor do metro quadrado
-
-        Raises:
-            ServiceNotFoundError: serviço não for encontrado
-
-        Returns:
-            ServiceCalculationResponseSchema: Objeto com todas as informações
-            do serviço e incluindo o total do serviço
-        """
-        service = self.verification.service_verification(data.name)
+        service = self.verification.query_service(data.name)
         if service is None:
             raise ServiceNotFoundError()
         else:
