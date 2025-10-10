@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
-from app.models.service_model import TypeService
+from app.models.service_model import Service
 from app.schemas.service_schema import ServiceSchema
 
 
@@ -15,7 +15,7 @@ class VerificationInterface(ABC):
 
 class ServiceVerificationByName(VerificationInterface):
     def service_verification(self, data):
-        return self.db.query(TypeService).filter(TypeService.name == data).first()
+        return self.db.query(Service).filter(Service.name == data).first()
 
 
 class ServiceRepository:
@@ -24,14 +24,14 @@ class ServiceRepository:
         self.verification = verification
 
     def create_service(self, data):
-        type_service = TypeService(name=data.name, service_value=data.service_value)
+        type_service = Service(name=data.name, value=data.service_value)
         self.db.add(type_service)
         self.db.commit()
         self.db.refresh(type_service)
         return ServiceSchema.model_validate(type_service)
 
     def get_all_service(self):
-        all_services = self.db.query(TypeService).all()
+        all_services = self.db.query(Service).all()
         return all_services
 
     def get_service(self, service_name):

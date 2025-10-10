@@ -2,8 +2,8 @@ import pytest
 from decimal import Decimal
 from app.repositories.service_repository import ServiceVerificationByName
 from app.schemas.service_schema import ServiceCalculationRequest
-from app.service_layer.service_layer import ServiceLayer
-from app.service_layer.service_layer import ServiceNotFoundError
+from app.service.service_layer import ServiceLayer
+from app.service.service_layer import ServiceNotFoundError
 
 
 def test_calculation(mocker):

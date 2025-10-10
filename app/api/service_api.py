@@ -11,7 +11,7 @@ from app.repositories.service_repository import (
     ServiceRepository,
     ServiceVerificationByName,
 )
-from app.service_layer.service_layer import (
+from app.service.service_layer import (
     ServiceLayer,
     ServiceNotFoundError,
     ServiceAlreadyExistsError,
@@ -30,7 +30,7 @@ router = APIRouter(prefix="/services", tags=["Services"])
 async def create_service(
     data: ServiceVerificationSchema,
     db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token)
+    user_id: int = Depends(verify_token),
 ) -> ServiceVerificationSchema:
     try:
         service = ServiceLayer(db)
@@ -44,8 +44,7 @@ async def create_service(
 
 @router.get("/", response_model=List[ServiceSchema])
 async def get_services(
-        db: Session = Depends(get_db),
-        user_id: int = Depends(verify_token)
+    db: Session = Depends(get_db), user_id: int = Depends(verify_token)
 ) -> List[ServiceSchema]:
     try:
         services = ServiceLayer(db)
@@ -53,7 +52,7 @@ async def get_services(
         logger.info(f"List found with values by user {user_id}")
         return result
     except ServiceListEmptyError:
-        logger.warning(f"The list is currently empty")
+        logger.warning("The list is currently empty")
         raise HTTPException(status_code=404, detail="Service list is empty")
 
 
@@ -61,7 +60,7 @@ async def get_services(
 async def get_service(
     service_name: str,
     db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token)
+    user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
@@ -75,7 +74,7 @@ async def update_service(
     service_name: str,
     service: ServiceVerificationSchema,
     db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token)
+    user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
@@ -86,9 +85,9 @@ async def update_service(
 
 @router.delete("/{service_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_service(
-        service_name: str,
-        db: Session = Depends(get_db),
-        user_id: int = Depends(verify_token)
+    service_name: str,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(verify_token),
 ):
     verification = ServiceVerificationByName(db)
     services = ServiceRepository(db, verification)
@@ -101,7 +100,7 @@ async def delete_service(
 async def service_calculation(
     data: ServiceCalculationRequest,
     db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token)
+    user_id: int = Depends(verify_token),
 ) -> ServiceCalculationResponse:
     service = ServiceLayer(db)
     try:

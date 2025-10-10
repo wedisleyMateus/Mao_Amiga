@@ -11,9 +11,9 @@ router = APIRouter(prefix="/clients", tags=["Clients"])
 
 @router.post("/", response_model=ClientRead)
 async def create_client(
-        data: ClientCreate,
-        db: Session = Depends(get_db),
-        user_id: int = Depends(verify_token)
+    data: ClientCreate,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(verify_token),
 ):
     client = ClientRepository(db)
     result = client.create_client(data)
@@ -23,9 +23,9 @@ async def create_client(
 
 @router.get("/{client_name}", response_model=ClientRead)
 async def get_client(
-        client_name: str,
-        db: Session = Depends(get_db),
-        user_id: int = Depends(verify_token)
+    client_name: str,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(verify_token),
 ):
     client = ClientRepository(db)
     result = client.get_client(client_name)
@@ -38,7 +38,7 @@ async def update_client(
     client_name: str,
     client_data: ClientCreate,
     db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token)
+    user_id: int = Depends(verify_token),
 ):
     client = ClientRepository(db)
     result = client.update_client(client_name, client_data)
@@ -48,9 +48,9 @@ async def update_client(
 
 @router.delete("/{client_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_client(
-        client_name: str,
-        db: Session = Depends(get_db),
-        user_id: int = Depends(verify_token)
+    client_name: str,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(verify_token),
 ):
     client = ClientRepository(db)
     result = client.detete_client(client_name)
