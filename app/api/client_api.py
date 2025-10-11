@@ -1,8 +1,13 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
-from app.core.database import get_db
+from app.infrastructure.conection import get_db
 from app.schemas.client_schema import ClientCreate, ClientRead
-from app.repositories.client_repository import ClientRepository
+from app.repositories.client_repository import (
+    GetClient,
+    UpdateClient,
+    DeleteClient,
+)
+from app.services.client import ClienteService
 from auth import verify_token
 from app.logger_config import logger
 
@@ -15,9 +20,9 @@ async def create_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    client = ClientRepository(db)
-    result = client.create_client(data)
-    logger.info(f"Client '{data.name}' created successfully by user {user_id}")
+    verification = ClienteService(db)
+    result = verification.existence_verification(data)
+    logger.info(f"Client nteSer'{data.name}' created successfully by user {user_id}")
     return result
 
 
@@ -27,7 +32,7 @@ async def get_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    client = ClientRepository(db)
+    client = GetClient(db)
     result = client.get_client(client_name)
     logger.info(f"Client '{client_name}' retrieved successfully by user {user_id}")
     return result
@@ -40,7 +45,7 @@ async def update_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    client = ClientRepository(db)
+    client = UpdateClient(db)
     result = client.update_client(client_name, client_data)
     logger.info(f"Client '{client_name}' updated successfully by user {user_id}")
     return result
@@ -52,7 +57,7 @@ async def delete_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    client = ClientRepository(db)
-    result = client.detete_client(client_name)
+    client = DeleteClient(db)
+    result = client.delete_client(client_name)
     logger.info(f"Client '{client_name}' deleted successfully by user {user_id}")
     return result
