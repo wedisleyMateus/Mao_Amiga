@@ -1,24 +1,18 @@
 from fastapi import Depends, APIRouter, status, HTTPException
 from typing import List
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
     ServiceCalculationRequest,
     ServiceCalculationResponse,
 )
-from app.repositories.service_repository import (
-    GetService,
-    DeleteService,
-    UpdateService,
-)
 from app.services.service import (
-    ServiceCreator,
-    ServiceLister,
+    ServiceManager,
     ServiceCalculator,
     ServiceNotFoundError,
     ServiceAlreadyExistsError,
-    ServiceListEmptyError,
+    ServiceListEmptyError
 )
 from app.infrastructure.conection import get_db
 from auth import verify_token
@@ -28,16 +22,16 @@ router = APIRouter(prefix="/services", tags=["Services"])
 
 
 @router.post(
-    "/", response_model=ServiceVerificationSchema, status_code=status.HTTP_201_CREATED
+    "/", response_model=ServiceSchema, status_code=status.HTTP_201_CREATED
 )
 async def create_service(
     data: ServiceVerificationSchema,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     user_id: int = Depends(verify_token),
-) -> ServiceVerificationSchema:
+) -> ServiceSchema:
     try:
-        service = ServiceCreator(db)
-        result = service.existence_verification(data)
+        service = ServiceManager(db)
+        result = await service.create_service(data)
         logger.info(f"Service {data.name} successfully registered by user {user_id}")
         return result
     except ServiceAlreadyExistsError:
@@ -47,11 +41,11 @@ async def create_service(
 
 @router.get("/", response_model=List[ServiceSchema])
 async def get_services(
-    db: Session = Depends(get_db), user_id: int = Depends(verify_token)
+    db: AsyncSession = Depends(get_db), user_id: int = Depends(verify_token)
 ) -> List[ServiceSchema]:
     try:
-        services = ServiceLister(db)
-        result = services.list_verification()
+        services = ServiceManager(db)
+        result = await services.get_all_services()
         logger.info(f"List found with values by user {user_id}")
         return result
     except ServiceListEmptyError:
@@ -62,11 +56,11 @@ async def get_services(
 @router.get("/{service_name}", response_model=ServiceSchema)
 async def get_service(
     service_name: str,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
-    service = GetService(db)
-    result = service.get_service(service_name)
+    service = ServiceManager(db)
+    result = await service.get_service(service_name)
     logger.info(f"Service '{service_name}' retrieved successfully by user {user_id}")
     return result
 
@@ -74,12 +68,12 @@ async def get_service(
 @router.put("/{service_name}", response_model=ServiceSchema)
 async def update_service(
     service_name: str,
-    service: ServiceVerificationSchema,
-    db: Session = Depends(get_db),
+    data: ServiceSchema,
+    db: AsyncSession = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
-    service = UpdateService(db)
-    result = service.update_service(service_name, service)
+    service = ServiceManager(db)
+    result = await service.update_service(data)
     logger.info(f"Service '{service_name}' updated successfully by user {user_id}")
     return result
 
@@ -87,11 +81,11 @@ async def update_service(
 @router.delete("/{service_name}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_service(
     service_name: str,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    service = DeleteService(db)
-    result = service.delete_service(service_name)
+    service = ServiceManager(db)
+    result = await service.delete_service(service_name)
     logger.info(f"Service '{service_name}' deleted successfully by user {user_id}")
     return result
 
@@ -99,12 +93,12 @@ async def delete_service(
 @router.post("/calculation", response_model=ServiceCalculationResponse)
 async def service_calculation(
     data: ServiceCalculationRequest,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceCalculationResponse:
     service = ServiceCalculator(db)
     try:
-        result = service.calculate_service_total(data)
+        result = await service.calculate_service_total(data)
         logger.info(f"Service calculation for '{data.name}' completed successfully")
         return result
     except ServiceNotFoundError:
