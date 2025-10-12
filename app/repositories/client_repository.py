@@ -1,48 +1,30 @@
-from sqlalchemy.orm import Session
 from app.models.client_model import Clients
-from app.schemas.client_schema import ClientRead
+from sqlalchemy.future import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-class ClientBase:
-    def __init__(self, db: Session):
+
+class ClientRepository:
+    def __init__(self, db: AsyncSession):
         self.db = db
 
 
-class CreateClient(ClientBase):
-
-    def create_client(self, data):
-        client = Clients(
-            name=data.name,
-            email=data.email,
-            telephone=data.telephone,
-            address=data.address,
-        )
+    async def create(self, client: Clients) -> Clients:
         self.db.add(client)
-        self.db.commit()
-        self.db.refresh(client)
-        return ClientRead.model_validate(client)
-
-
-class GetClient(ClientBase):
-    def get_client(self, client_name):
-        client = self.db.query(Clients).filter(Clients.name == client_name).first()
+        await self.db.commit()
+        await self.db.refresh(client)
         return client
 
 
-class UpdateClient(ClientBase):
-
-    def update_client(self, client, client_data):
-        client = self.db.query(Clients).filter(Clients.name == client).first()
-        client.email = client_data.email
-        client.telephone = client_data.telephone
-        client.address = client_data.address
-        self.db.commit()
-        self.db.refresh(client)
-        return client
+    async def get_by_name(self, name: str) -> Clients:
+        result = await self.db.execute(select(Clients).filter(Clients.name == name))
+        return result.scalar_one_or_none()
 
 
-class DeleteClient(ClientBase):
+    async def update(self, client: Clients) -> Clients:
+        await self.db.commit()
+        await self.db.refresh(client)
 
-    def delete_client(self, client_name):
-        client = self.db.query(Clients).filter(Clients.name == client_name).first()
-        self.db.delete(client)
-        self.db.commit()
+
+    async def delete(self, client: Clients) -> Clients:
+        await self.db.delete(client)
+        await self.db.commit()
