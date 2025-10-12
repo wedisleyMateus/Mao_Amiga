@@ -16,7 +16,7 @@ class ClientService:
 
     async def create_client(self, data: ClientCreate) -> ClientRead:
         existing_client =  await self.repository.get_by_name(data.name)
-        if not existing_client:
+        if existing_client:
             raise ClientNotFound()
         client = Clients(**data.model_dump())
         create = await self.repository.create(client)

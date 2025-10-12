@@ -21,7 +21,7 @@ class ServiceRepository:
         return result.scalar_one_or_none()
 
 
-    async def get_services(self, service: Service) -> List[Service]:
+    async def get_services(self) -> List[Service]:
         result = await self.db.execute(select(Service))
         services = list(result.scalars().all())
         return services
