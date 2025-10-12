@@ -1,65 +1,39 @@
-from sqlalchemy.orm import Session
-from abc import ABC, abstractmethod
+from sqlalchemy.future import select
+from typing import List
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.service_model import Service
-from app.schemas.service_schema import ServiceSchema
 
 
-class BaseService(ABC):
-    def __init__(self, db: Session):
+class ServiceRepository:
+    def __init__(self, db: AsyncSession):
         self.db = db
 
-    @abstractmethod
-    def query_service(self, data):
-        pass
 
-
-class ServiceBase(BaseService):
-    def query_service(self, data):
-        return self.db.query(Service).filter(Service.name == data).first()
-
-
-class CreateService:
-    def __init__(self, db: Session):
-        self.db = db
-
-    def create_service(self, data):
-        type_service = Service(name=data.name, value=data.value)
-        self.db.add(type_service)
-        self.db.commit()
-        self.db.refresh(type_service)
-        return ServiceSchema.model_validate(type_service)
-
-
-class GetAllServices:
-    def __init__(self, db: Session):
-        self.db = db
-
-    def get_all_services(self):
-        all_services = self.db.query(Service).all()
-        return all_services
-
-
-class GetService(ServiceBase):
-
-    def get_service(self, service_name):
-        service = self.query_service(service_name)
+    async def create(self, service: Service) -> Service:
+        self.db.add(service)
+        await self.db.commit()
+        await self.db.refresh(service)
         return service
 
 
-class UpdateService(ServiceBase):
-
-    def update_service(self, service_name, service):
-        get_service = self.query_service(service_name)
-        get_service.name = service.name
-        get_service.service_value = service.service_value
-        self.db.commit()
-        self.db.refresh(get_service)
-        return get_service
+    async def get_by_name(self, name: str) -> Service:
+        result = await self.db.execute(select(Service).filter(Service.name == name))
+        return result.scalar_one_or_none()
 
 
-class DeleteService(ServiceBase):
+    async def get_services(self, service: Service) -> List[Service]:
+        result = await self.db.execute(select(Service))
+        services = list(result.scalars().all())
+        return services
 
-    def delete_service(self, service_name):
-        get_service = self.query_service(service_name)
-        self.db.delete(get_service)
-        self.db.commit()
+
+    async def update(self, service: Service) -> Service:
+        self.db.add(service)
+        await self.db.commit()
+        await self.db.refresh(service)
+        return service
+
+
+    async def delete(self, service: Service) -> Service:
+        await self.db.delete(service)
+        await self.db.commit()
