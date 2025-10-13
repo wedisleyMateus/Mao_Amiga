@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 # from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.login_schema import (
+from app.Domain.schemas.login_schema import (
     LoginRegisterResponse,
     LoginRegisterRequest,
     TokenResponse,
 )
 from app.infrastructure.conection import get_db
 from app.repositories.login_repository import LoginRepository
-from app.infrastructure.logger_config import logger
+from app.core.logger_config import logger
 
 
 router = APIRouter(prefix="/login", tags=["login"])

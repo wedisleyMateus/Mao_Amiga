@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.models.login_model import Login
-from app.schemas.login_schema import LoginRegisterResponse, TokenResponse
+from app.Domain.models.login_model import Login
+from app.Domain.schemas.login_schema import LoginRegisterResponse, TokenResponse
 from auth import hashed_password, verify_password, creat_access_token
-from app.infrastructure.logger_config import logger
+from app.core.logger_config import logger
 
 
 class LoginRepository:
@@ -21,7 +21,7 @@ class LoginRepository:
         return LoginRegisterResponse.model_validate(account)
 
     async def get_login(self, data):
-        logger.info(f"Tentando autenticar o usuário '{data.username}'")
+        logger.info(f"Trying to authenticate user '{data.username}'")
         query = select(Login).where(Login.username == data.username)
         result = await self.db.execute(query)
         account = result.scalar_one_or_none()

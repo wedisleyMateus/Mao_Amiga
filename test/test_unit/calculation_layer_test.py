@@ -1,7 +1,7 @@
 import pytest
 from decimal import Decimal
 from app.repositories.service_repository import ServiceVerificationByName
-from app.schemas.service_schema import ServiceCalculationRequest
+from app.Domain.schemas.service_schema import ServiceCalculationRequest
 from app.services.service import ServiceLayer
 from app.services.service import ServiceNotFoundError
 
