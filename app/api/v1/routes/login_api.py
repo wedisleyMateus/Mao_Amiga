@@ -10,7 +10,7 @@ from app.repositories.login_repository import LoginRepository
 from app.core.logger_config import logger
 
 
-router = APIRouter(prefix="/login", tags=["login"])
+router = APIRouter(prefix="/v1/login", tags=["login"])
 
 
 @router.post("", response_model=TokenResponse)
