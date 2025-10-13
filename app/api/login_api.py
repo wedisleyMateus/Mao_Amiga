@@ -8,7 +8,7 @@ from app.schemas.login_schema import (
 )
 from app.infrastructure.conection import get_db
 from app.repositories.login_repository import LoginRepository
-from app.logger_config import logger
+from app.infrastructure.logger_config import logger
 
 
 router = APIRouter(prefix="/login", tags=["login"])
