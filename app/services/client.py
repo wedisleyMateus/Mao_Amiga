@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.Domain.models.client_model import Clients
-from app.Domain.schemas import ClientCreate, ClientRead
+from app.domain.models.client_model import Clients
+from app.domain.schemas import ClientCreate, ClientRead
 from app.repositories.client_repository import ClientRepository
 
 

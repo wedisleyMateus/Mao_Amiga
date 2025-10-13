@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.Domain.models.login_model import Login
-from app.Domain.schemas.login_schema import LoginRegisterResponse, TokenResponse
+from app.domain.models.login_model import Login
+from app.domain.schemas.login_schema import LoginRegisterResponse, TokenResponse
 from auth import hashed_password, verify_password, creat_access_token
 from app.core.logger_config import logger
 

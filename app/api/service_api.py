@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter, status, HTTPException
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.Domain.schemas.service_schema import (
+from app.domain.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
     ServiceCalculationRequest,

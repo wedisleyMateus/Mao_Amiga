@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-# from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.Domain.schemas.login_schema import (
+from app.domain.schemas.login_schema import (
     LoginRegisterResponse,
     LoginRegisterRequest,
     TokenResponse,

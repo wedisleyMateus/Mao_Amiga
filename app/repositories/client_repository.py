@@ -1,4 +1,4 @@
-from app.Domain.models.client_model import Clients
+from app.domain.models.client_model import Clients
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.logger_config import logger

@@ -7,7 +7,7 @@ from app.api.service_api import (
     delete_service,
 )
 from fastapi import HTTPException
-from app.Domain.schemas.service_schema import ServiceVerificationSchema
+from app.domain.schemas.service_schema import ServiceVerificationSchema
 from app.repositories.service_repository import VerificationWithName
 
 
