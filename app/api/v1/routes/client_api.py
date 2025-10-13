@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.infrastructure.conection import get_db
+from app.api.v1.dependencies.db import get_db
 from app.domain.schemas.client_schema import ClientCreate, ClientRead
 from app.services.client import ClientService
 from auth import verify_token

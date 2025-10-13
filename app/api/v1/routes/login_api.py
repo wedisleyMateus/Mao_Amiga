@@ -5,7 +5,7 @@ from app.domain.schemas.login_schema import (
     LoginRegisterRequest,
     TokenResponse,
 )
-from app.infrastructure.conection import get_db
+from app.api.v1.dependencies.db import get_db
 from app.repositories.login_repository import LoginRepository
 from app.core.logger_config import logger
 

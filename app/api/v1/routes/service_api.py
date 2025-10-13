@@ -14,7 +14,7 @@ from app.services.service import (
     ServiceAlreadyExistsError,
     ServiceListEmptyError
 )
-from app.infrastructure.conection import get_db
+from app.api.v1.dependencies.db import get_db
 from auth import verify_token
 from app.core.logger_config import logger
 
