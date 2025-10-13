@@ -4,7 +4,7 @@ from app.infrastructure.conection import get_db
 from app.schemas.client_schema import ClientCreate, ClientRead
 from app.services.client import ClientService
 from auth import verify_token
-from app.logger_config import logger
+from app.infrastructure.logger_config import logger
 
 router = APIRouter(prefix="/clients", tags=["Clients"])
 
