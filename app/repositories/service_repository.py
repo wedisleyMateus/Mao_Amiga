@@ -1,6 +1,6 @@
-from sqlalchemy.future import select
-from typing import List
+from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from app.models.service_model import Service
 
 
@@ -21,9 +21,9 @@ class ServiceRepository:
         return result.scalar_one_or_none()
 
 
-    async def get_services(self) -> List[Service]:
+    async def get_services(self) -> Sequence[Service]:
         result = await self.db.execute(select(Service))
-        services = list(result.scalars().all())
+        services = result.scalars().all()
         return services
 
 
@@ -34,6 +34,6 @@ class ServiceRepository:
         return service
 
 
-    async def delete(self, service: Service) -> Service:
+    async def delete(self, service: Service) -> None:
         await self.db.delete(service)
         await self.db.commit()
