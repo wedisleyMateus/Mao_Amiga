@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+# from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.login_schema import (
     LoginRegisterResponse,
     LoginRegisterRequest,
@@ -14,9 +15,9 @@ router = APIRouter(prefix="/login", tags=["login"])
 
 
 @router.post("", response_model=TokenResponse)
-async def login(data: LoginRegisterRequest, db: Session = Depends(get_db)):
-    login_in = LoginRepository(db=db)
-    result = login_in.get_login(data)
+async def login(data: LoginRegisterRequest, db: AsyncSession = Depends(get_db)):
+    login_in = LoginRepository(db)
+    result = await login_in.get_login(data)
     if result is None:
         raise HTTPException(status_code=404, detail="Login failed")
     logger.info("The login was successful")
@@ -25,9 +26,9 @@ async def login(data: LoginRegisterRequest, db: Session = Depends(get_db)):
 
 @router.post("/register", response_model=LoginRegisterResponse)
 async def login_register(
-    data: LoginRegisterRequest, db: Session = Depends(get_db)
+    data: LoginRegisterRequest, db: AsyncSession = Depends(get_db)
 ) -> LoginRegisterResponse:
     login_repository = LoginRepository(db)
-    result = login_repository.get_login(data)
+    result = await login_repository.get_login(data)
     logger.info("User registered successfully")
     return result

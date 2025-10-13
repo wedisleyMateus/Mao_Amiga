@@ -33,7 +33,7 @@ class ServiceManager:
         if existing:
             raise ServiceAlreadyExistsError()
         service = Service(**data.model_dump())
-        created = self.repository.create(service)
+        created = await self.repository.create(service)
         return ServiceSchema.model_validate(created)
 
 
