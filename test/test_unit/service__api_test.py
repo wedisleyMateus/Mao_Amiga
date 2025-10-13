@@ -1,5 +1,5 @@
 import pytest
-from app.api.service_api import (
+from app.api.v1.routes.service_api import (
     create_service,
     get_services,
     get_service,

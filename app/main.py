@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import service_api, client_api, login_api
+from app.api.v1.routes import client_api, login_api, service_api
 
 app = FastAPI()
 
