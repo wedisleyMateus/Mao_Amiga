@@ -1,7 +1,7 @@
-from app.models.client_model import Clients
+from app.domain.models.client_model import Clients
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.infrastructure.logger_config import logger
+from app.core.logger_config import logger
 
 
 class ClientRepository:

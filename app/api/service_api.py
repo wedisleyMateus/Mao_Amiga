@@ -1,7 +1,7 @@
 from fastapi import Depends, APIRouter, status, HTTPException
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.service_schema import (
+from app.domain.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
     ServiceCalculationRequest,
@@ -16,7 +16,7 @@ from app.services.service import (
 )
 from app.infrastructure.conection import get_db
 from auth import verify_token
-from app.infrastructure.logger_config import logger
+from app.core.logger_config import logger
 
 router = APIRouter(prefix="/services", tags=["Services"])
 

@@ -1,9 +1,9 @@
 from decimal import Decimal
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.service_model import Service
+from app.domain.models.service_model import Service
 from app.repositories.service_repository import ServiceRepository
-from app.schemas.service_schema import (
+from app.domain.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
     ServiceCalculationRequest,

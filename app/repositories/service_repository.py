@@ -1,8 +1,8 @@
 from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from app.models.service_model import Service
-from app.infrastructure.logger_config import logger
+from app.domain.models.service_model import Service
+from app.core.logger_config import logger
 
 
 class ServiceRepository:
