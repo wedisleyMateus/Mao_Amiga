@@ -13,7 +13,7 @@ class ClientService:
         self.repository = RepositoryCRUD(db)
 
 
-    async def create_client(self, data: ClientCreate) -> ClientRead:
+    def create_client(self, data: ClientCreate) -> ClientRead:
         existing_client = self.repository.get_by_name(data.name)
         if existing_client:
             raise ClientNotFound()
@@ -49,6 +49,5 @@ class ClientService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Client not found"
             )
-
         self.repository.delete(client)
         return {"message": "Client deleted"}
