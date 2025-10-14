@@ -1,9 +1,9 @@
 from decimal import Decimal
 from typing import List
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from app.models.service_model import Service
 from app.repositories.service_repository import ServiceRepository
-from app.schemas import (
+from app.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
     ServiceCalculationRequest,
@@ -24,59 +24,59 @@ class ServiceListEmptyError(Exception):
 
 
 class ServiceManager:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: Session):
         self.repository = ServiceRepository(db)
 
 
-    async def create_service(self, data: ServiceVerificationSchema) -> ServiceSchema:
-        existing = await self.repository.get_by_name(data.name)
+    def create_service(self, data: ServiceVerificationSchema) -> ServiceSchema:
+        existing = self.repository.get_by_name(data.name)
         if existing:
             raise ServiceAlreadyExistsError()
         service = Service(**data.model_dump())
-        created = await self.repository.create(service)
+        created = self.repository.create(service)
         return ServiceSchema.model_validate(created)
 
 
-    async def get_all_services(self) -> List[ServiceSchema]:
-        list_services_existing = await self.repository.get_services()
+    def get_all_services(self) -> List[ServiceSchema]:
+        list_services_existing = self.repository.get_services()
         if not list_services_existing:
             raise ServiceListEmptyError()
         return [ServiceSchema.model_validate(service)
                 for service in list_services_existing]
 
 
-    async def get_service(self, name: str) -> ServiceSchema:
-        existing = await self.repository.get_by_name(name)
+    def get_service(self, name: str) -> ServiceSchema:
+        existing = self.repository.get_by_name(name)
         if not existing:
             raise ServiceNotFoundError()
         return ServiceSchema.model_validate(existing)
 
 
-    async def update_service(self, data: ServiceSchema) -> ServiceSchema:
-        service = await self.repository.get_by_name(data.name)
+    def update_service(self, data: ServiceSchema) -> ServiceSchema:
+        service = self.repository.get_by_name(data.name)
         if not service:
             raise ServiceNotFoundError()
         service.name = data.name
         service.value = data.value
-        updated = await self.repository.update(service)
+        updated = self.repository.update(service)
         return ServiceSchema.model_validate(updated)
 
 
-    async def delete_service(self, name: str) -> ServiceSchema:
-        service = await self.repository.get_by_name(name)
+    def delete_service(self, name: str) -> dict[str, str]:
+        service = self.repository.get_by_name(name)
         if not service:
             raise ServiceNotFoundError()
-        delete = await self.repository.delete(service)
-        return ServiceSchema.model_validate(delete)
+        self.repository.delete(service)
+        return {"message": "Service deleted"}
 
 
 class ServiceCalculator:
-    def __init__(self, db: AsyncSession):
+    def __init__(self, db: Session):
         self.repository = ServiceRepository(db)
 
-    async def calculate_service_total(self, data: ServiceCalculationRequest):
+    def calculate_service_total(self, data: ServiceCalculationRequest):
 
-        service = await self.repository.get_by_name(data.name)
+        service = self.repository.get_by_name(data.name)
         if not service:
             raise ServiceNotFoundError()
         else:
