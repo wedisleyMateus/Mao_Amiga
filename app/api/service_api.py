@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter, status, HTTPException
 from typing import List
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Session
 from app.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
@@ -14,7 +14,7 @@ from app.services.service import (
     ServiceAlreadyExistsError,
     ServiceListEmptyError
 )
-from app.api.v1.dependencies.db import get_db
+from app.infrastructure.conection import get_db
 from auth import verify_token
 from app.core.logger_config import logger
 
@@ -24,14 +24,14 @@ router = APIRouter(prefix="/v1/services", tags=["Services"])
 @router.post(
     "/", response_model=ServiceSchema, status_code=status.HTTP_201_CREATED
 )
-async def create_service(
+def create_service(
     data: ServiceVerificationSchema,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
     try:
         service = ServiceManager(db)
-        result = await service.create_service(data)
+        result = service.create_service(data)
         logger.info(f"Service {data.name} successfully registered by user {user_id}")
         return result
     except ServiceAlreadyExistsError:
@@ -40,12 +40,12 @@ async def create_service(
 
 
 @router.get("/", response_model=List[ServiceSchema])
-async def get_services(
-    db: AsyncSession = Depends(get_db), user_id: int = Depends(verify_token)
+def get_services(
+    db: Session = Depends(get_db), user_id: int = Depends(verify_token)
 ) -> List[ServiceSchema]:
     try:
         services = ServiceManager(db)
-        result = await services.get_all_services()
+        result = services.get_all_services()
         logger.info(f"List found with values by user {user_id}")
         return result
     except ServiceListEmptyError:
@@ -54,51 +54,51 @@ async def get_services(
 
 
 @router.get("/{service_name}", response_model=ServiceSchema)
-async def get_service(
+def get_service(
     service_name: str,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
     service = ServiceManager(db)
-    result = await service.get_service(service_name)
+    result = service.get_service(service_name)
     logger.info(f"Service '{service_name}' retrieved successfully by user {user_id}")
     return result
 
 
 @router.put("/{service_name}", response_model=ServiceSchema)
-async def update_service(
+def update_service(
     service_name: str,
     data: ServiceSchema,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceSchema:
     service = ServiceManager(db)
-    result = await service.update_service(data)
+    result = service.update_service(data)
     logger.info(f"Service '{service_name}' updated successfully by user {user_id}")
     return result
 
 
 @router.delete("/{service_name}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_service(
+def delete_service(
     service_name: str,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
     service = ServiceManager(db)
-    result = await service.delete_service(service_name)
+    result = service.delete_service(service_name)
     logger.info(f"Service '{service_name}' deleted successfully by user {user_id}")
     return result
 
 
 @router.post("/calculation", response_model=ServiceCalculationResponse)
-async def service_calculation(
+def service_calculation(
     data: ServiceCalculationRequest,
-    db: AsyncSession = Depends(get_db),
+    db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ) -> ServiceCalculationResponse:
     service = ServiceCalculator(db)
     try:
-        result = await service.calculate_service_total(data)
+        result = service.calculate_service_total(data)
         logger.info(f"Service calculation for '{data.name}' completed successfully")
         return result
     except ServiceNotFoundError:
