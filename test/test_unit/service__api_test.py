@@ -1,5 +1,5 @@
 import pytest
-from app.api.v1.routes.service_api import (
+from app.api.service_api import (
     create_service,
     get_services,
     get_service,
@@ -7,7 +7,7 @@ from app.api.v1.routes.service_api import (
     delete_service,
 )
 from fastapi import HTTPException
-from app.domain.schemas.service_schema import ServiceVerificationSchema
+from app.schemas import ServiceVerificationSchema
 from app.repositories.service_repository import VerificationWithName
 
 
