@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import List
 from sqlalchemy.orm import Session
 from app.repositories.service_repository import RepositoryCRUD
+from app.models.service_model import Service
 from app.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
@@ -27,6 +28,13 @@ class ServiceManager:
         self.repository = RepositoryCRUD(db)
 
 
+    def _get_or_raise(self, name: str) -> Service:
+        service = self.repository.get_by_name(name)
+        if not service:
+            raise ServiceNotFoundError()
+        return service
+
+
     def create_service(self, data: ServiceVerificationSchema) -> ServiceSchema:
         existing = self.repository.get_by_name(data.name)
         if existing:
@@ -44,24 +52,18 @@ class ServiceManager:
 
 
     def get_service(self, name: str) -> ServiceSchema:
-        existing = self.repository.get_by_name(name)
-        if not existing:
-            raise ServiceNotFoundError()
+        existing = self._get_or_raise(name)
         return ServiceSchema.model_validate(existing)
 
 
     def update_service(self, data: ServiceSchema) -> ServiceSchema:
-        service = self.repository.get_by_name(data.name)
-        if not service:
-            raise ServiceNotFoundError()
+        service = self._get_or_raise(data.name)
         updated = self.repository.update(service, data)
         return updated
 
 
     def delete_service(self, name: str) -> dict[str, str]:
-        service = self.repository.get_by_name(name)
-        if not service:
-            raise ServiceNotFoundError()
+        service = self._get_or_raise(name)
         self.repository.delete(service)
         return {"message": "Service deleted"}
 
