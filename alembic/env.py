@@ -10,6 +10,7 @@ from app.infrastructure.conection import Base
 # from app.models.service_model import Service
 # from app.models.client_model import Clients
 # from app.models.login_model import Login
+# from app.models.calculation import CalculationRecord
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

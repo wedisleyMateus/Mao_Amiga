@@ -4,14 +4,21 @@ from pydantic import BaseModel
 
 
 class CalculationRequest(BaseModel):
-    name: int
-    client: int
+    service_name: str
+    client_idt: int
     square_meter: Decimal
 
 
+class CalculationOjb(BaseModel):
+    service_id: int
+    client_id: int
+    service_value: Decimal
+    square_meter: Decimal
+    total: Decimal
+
 class CalculationResponse(BaseModel):
-    name: int
-    client: int
+    service_id: int
+    client_id: int
     service_value: Decimal
     square_meter: Decimal
     total: Decimal
