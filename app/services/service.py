@@ -1,8 +1,7 @@
 from decimal import Decimal
 from typing import List
 from sqlalchemy.orm import Session
-from app.models.service_model import Service
-from app.repositories.service_repository import ServiceRepository
+from app.repositories.service_repository import RepositoryCRUD
 from app.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
@@ -25,16 +24,15 @@ class ServiceListEmptyError(Exception):
 
 class ServiceManager:
     def __init__(self, db: Session):
-        self.repository = ServiceRepository(db)
+        self.repository = RepositoryCRUD(db)
 
 
     def create_service(self, data: ServiceVerificationSchema) -> ServiceSchema:
         existing = self.repository.get_by_name(data.name)
         if existing:
             raise ServiceAlreadyExistsError()
-        service = Service(**data.model_dump())
-        created = self.repository.create(service)
-        return ServiceSchema.model_validate(created)
+        created = self.repository.create(data)
+        return created
 
 
     def get_all_services(self) -> List[ServiceSchema]:
@@ -56,10 +54,8 @@ class ServiceManager:
         service = self.repository.get_by_name(data.name)
         if not service:
             raise ServiceNotFoundError()
-        service.name = data.name
-        service.value = data.value
-        updated = self.repository.update(service)
-        return ServiceSchema.model_validate(updated)
+        updated = self.repository.update(service, data)
+        return updated
 
 
     def delete_service(self, name: str) -> dict[str, str]:
@@ -72,7 +68,7 @@ class ServiceManager:
 
 class ServiceCalculator:
     def __init__(self, db: Session):
-        self.repository = ServiceRepository(db)
+        self.repository = RepositoryCRUD(db)
 
     def calculate_service_total(self, data: ServiceCalculationRequest):
 

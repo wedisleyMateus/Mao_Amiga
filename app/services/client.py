@@ -1,8 +1,7 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from app.models.client_model import Clients
 from app.schemas.client_schema import ClientCreate, ClientRead
-from app.repositories.client_repository import ClientRepository
+from app.repositories.client_repository import RepositoryCRUD
 
 
 class ClientNotFound(Exception):
@@ -11,16 +10,15 @@ class ClientNotFound(Exception):
 
 class ClientService:
     def __init__(self, db: Session):
-        self.repository = ClientRepository(db)
+        self.repository = RepositoryCRUD(db)
 
 
-    async def create_client(self, data: ClientCreate) -> ClientRead:
+    def create_client(self, data: ClientCreate) -> ClientRead:
         existing_client = self.repository.get_by_name(data.name)
         if existing_client:
             raise ClientNotFound()
-        client = Clients(**data.model_dump())
-        create = self.repository.create(client)
-        return ClientRead.model_validate(create)
+        create = self.repository.create(data)
+        return create
 
 
     def get_client(self, name: str) -> ClientRead:
@@ -40,12 +38,8 @@ class ClientService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Client not found"
             )
-        client.name = data.name
-        client.email = data.email
-        client.telephone = data.telephone
-        client.address = data.address
-        update = self.repository.update(client)
-        return ClientRead.model_validate(update)
+        update = self.repository.update(client, data)
+        return update
 
 
     def delete_client(self, name: str ) -> dict[str, str]:
@@ -55,6 +49,5 @@ class ClientService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Client not found"
             )
-
         self.repository.delete(client)
         return {"message": "Client deleted"}
