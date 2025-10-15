@@ -8,6 +8,12 @@ class RepositoryBase:
     def __init__(self, db: Session):
         self.db = db
 
+    def _save(self, obj):
+        self.db.add(obj)
+        self.db.commit()
+        self.db.refresh(obj)
+        return obj
+
 
 class RepositoryCreate(RepositoryBase):
     def create(self, data) -> ClientRead:
@@ -18,9 +24,7 @@ class RepositoryCreate(RepositoryBase):
             address=data.address
         )
         logger.info("Starting client creation process")
-        self.db.add(client)
-        self.db.commit()
-        self.db.refresh(client)
+        self._save(client)
         logger.info(f"Client {client.name} successfully created")
         return ClientRead.model_validate(client)
 
@@ -40,8 +44,7 @@ class RepositoryUpdate(RepositoryBase):
         client.telephone = data.telephone
         client.address = data.address
         logger.info(f"Starting update process for client id={client.id}")
-        self.db.commit()
-        self.db.refresh(client)
+        self._save(client)
         logger.info(f"Client id={client.id} successfully updated")
         return ClientRead.model_validate(client)
 
