@@ -8,13 +8,17 @@ class RepositoryBase:
     def __init__(self, db: Session):
         self.db = db
 
+    def _save(self, obj):
+        self.db.add(obj)
+        self.db.commit()
+        self.db.refresh(obj)
+        return obj
+
 
 class RepositoryCreate(RepositoryBase):
     def create(self, data) -> ServiceSchema:
         service = Service(name=data.name, value=data.value)
-        self.db.add(service)
-        self.db.commit()
-        (self.db.refresh(service))
+        self._save(service)
         logger.info(f"Service '{service.name}' created successfully.")
         return ServiceSchema.model_validate(service)
 
@@ -40,9 +44,7 @@ class RepositoryUpdate(RepositoryBase):
         service.name = data.name
         service.value = data.value
         logger.info(f"Updating service: '{service.name}'...")
-        self.db.add(service)
-        self.db.commit()
-        self.db.refresh(service)
+        self._save(service)
         logger.info(f"Service '{service.name}' updated successfully.")
         return service
 
