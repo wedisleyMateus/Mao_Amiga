@@ -4,13 +4,9 @@ from sqlalchemy.orm import Session
 from app.schemas.service_schema import (
     ServiceSchema,
     ServiceVerificationSchema,
-    ServiceCalculationRequest,
-    ServiceCalculationResponse,
 )
 from app.services.service import (
     ServiceManager,
-    ServiceCalculator,
-    ServiceNotFoundError,
     ServiceAlreadyExistsError,
     ServiceListEmptyError
 )
@@ -88,19 +84,3 @@ def delete_service(
     result = service.delete_service(service_name)
     logger.info(f"Service '{service_name}' deleted successfully by user {user_id}")
     return result
-
-
-@router.post("/calculation", response_model=ServiceCalculationResponse)
-def service_calculation(
-    data: ServiceCalculationRequest,
-    db: Session = Depends(get_db),
-    user_id: int = Depends(verify_token),
-) -> ServiceCalculationResponse:
-    service = ServiceCalculator(db)
-    try:
-        result = service.calculate_service_total(data)
-        logger.info(f"Service calculation for '{data.name}' completed successfully")
-        return result
-    except ServiceNotFoundError:
-        logger.warning(f"Service {data.name} not found")
-        raise HTTPException(status_code=404, detail="Serviço não encontrado")
