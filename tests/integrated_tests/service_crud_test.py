@@ -1,4 +1,4 @@
-from test.conftest import Service
+from tests.conftest import Service
 
 
 def test_create_user(db):
