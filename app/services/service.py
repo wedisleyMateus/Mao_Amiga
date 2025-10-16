@@ -7,18 +7,11 @@ from app.schemas.service_schema import (
     ServiceResponse,
     ServiceVerificationSchema
 )
-
-
-class ServiceNotFoundError(Exception):
-    pass
-
-
-class ServiceAlreadyExistsError(Exception):
-    pass
-
-
-class ServiceListEmptyError(Exception):
-    pass
+from app.core.exceptions.service import (
+    ServiceNotFoundError,
+    ServiceAlreadyExistsError,
+    ServiceListEmptyError,
+)
 
 
 class SrvService:
