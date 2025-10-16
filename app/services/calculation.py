@@ -1,19 +1,19 @@
 from decimal import Decimal
 from sqlalchemy.orm import Session
-from app.repositories.service_repository import RepositoryCRUD
-from app.repositories.calculation_repository import RepositoryCreate
-from app.schemas.calculation_schema import CalculationRequest, CalculationOjb
+from app.repositories.service_repository import ServiceRepositoryCRUD
+from app.repositories.calculation_repository import CalculationRepositoryCRUD
+from app.schemas.calculation_schema import CalculationRequest, CalculationCreate
 from app.services.service import ServiceNotFoundError
 
 
-class ServiceCalculator:
+class SrvCalculation:
     def __init__(self, db: Session):
-        self.repository = RepositoryCRUD(db)
-        self.repository_calc = RepositoryCreate(db)
+        self.service_repo = ServiceRepositoryCRUD(db)
+        self.calculation_repo = CalculationRepositoryCRUD(db)
         self.db = db
 
     def calculate_service_total(self, data: CalculationRequest):
-        service = self.repository.get_by_name(data.name)
+        service = self.service_repo.get_by_name(data.name)
 
         if not service:
             raise ServiceNotFoundError()
@@ -21,13 +21,13 @@ class ServiceCalculator:
 
         total = service.value * Decimal(str(data.square_meter))
 
-        corpo =  CalculationOjb(
+        new_calculation =  CalculationCreate(
             service_id=service.id,
             client_id=data.client_idt,
             service_value=service.value,
             square_meter=data.square_meter,
             total=total,
         )
-        result = self.repository_calc.create(corpo)
+        result = self.calculation_repo.create(new_calculation)
         return result
 

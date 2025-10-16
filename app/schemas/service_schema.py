@@ -1,8 +1,12 @@
-
 from pydantic import BaseModel, field_validator
 
 
-class ServiceSchema(BaseModel):
+class ServiceRequest(BaseModel):
+    id: int
+    name: str
+    value: float
+
+class ServiceResponse(BaseModel):
     id: int
     name: str
     value: float

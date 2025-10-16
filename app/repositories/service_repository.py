@@ -2,7 +2,6 @@ from typing import List
 from sqlalchemy.orm import Session
 from app.models.service_model import Service
 from app.core.logger_config import logger
-from app.schemas.service_schema import ServiceSchema
 
 
 class ServiceRepositoryBase:
@@ -17,11 +16,11 @@ class ServiceRepositoryBase:
 
 
 class ServiceRepositoryCreate(ServiceRepositoryBase):
-    def create(self, data) -> ServiceSchema:
+    def create(self, data) -> Service:
         service = Service(name=data.name, value=data.value)
-        self.persist(service)
+        result = self.persist(service)
         logger.info(f"Service '{service.name}' created successfully.")
-        return ServiceSchema.model_validate(service)
+        return result
 
 
 class ServiceRepositoryRetrieveByName(ServiceRepositoryBase):
@@ -41,13 +40,13 @@ class ServiceRepositoryRetrieveAll(ServiceRepositoryBase):
 
 
 class ServiceRepositoryUpdate(ServiceRepositoryBase):
-    def update(self, service, data) -> ServiceSchema:
+    def update(self, service, data) -> Service:
         service.name = data.name
         service.value = data.value
         logger.info(f"Updating service: '{service.name}'...")
-        self.persist(service)
+        result = self.persist(service)
         logger.info(f"Service '{service.name}' updated suc  cessfully.")
-        return service
+        return result
 
 
 class ServiceRepositoryDelete(ServiceRepositoryBase):

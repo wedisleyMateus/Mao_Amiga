@@ -9,18 +9,18 @@ class CalculationRepositoryBase:
 
 
 class CalculationRepositoryCreate(CalculationRepositoryBase):
-    def create(self, corpo) -> CalculationResponse:
-        calculation_obj = Calculation(
-            service_id=corpo.service_id,
-            client_id=corpo.client,
-            value=corpo.service_value,
-            squad_value=corpo.square_meter,
-            total=corpo.tota
+    def create(self, new_calculation) -> CalculationResponse:
+        calculation_entity = Calculation(
+            service_id=new_calculation.service_id,
+            client_id=new_calculation.client,
+            value=new_calculation.service_value,
+            squad_value=new_calculation.square_meter,
+            total=new_calculation.tota
         )
-        self.db.add(calculation_obj)
+        self.db.add(calculation_entity)
         self.db.commit()
-        self.db.refresh(calculation_obj)
-        return CalculationResponse.model_validate(calculation_obj)
+        self.db.refresh(calculation_entity)
+        return CalculationResponse.model_validate(calculation_entity )
 
 
 class CalculationRepositoryCRUD(

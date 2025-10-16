@@ -9,7 +9,7 @@ class CalculationRequest(BaseModel):
     square_meter: Decimal
 
 
-class CalculationOjb(BaseModel):
+class CalculationCreate(BaseModel):
     service_id: int
     client_id: int
     service_value: Decimal
