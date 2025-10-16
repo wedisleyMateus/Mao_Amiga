@@ -33,7 +33,7 @@ class ClientRepositoryRetrieveByName(ClientRepositoryBase):
     def get_by_name(self, name: str) -> Client | None:
         logger.info("starting the process of finding a client")
         client = self.db.query(Client).filter(Client.name == name).first()
-        logger.info(f"Found client {name} with id {client.id}")
+        logger.info(f"Found client {name}")
         return client
 
 

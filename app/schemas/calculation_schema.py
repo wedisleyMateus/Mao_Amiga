@@ -19,8 +19,8 @@ class CalculationCreate(BaseModel):
 class CalculationResponse(BaseModel):
     service_id: int
     client_id: int
-    service_value: Decimal
-    square_meter: Decimal
+    value: Decimal
+    squad_value: Decimal
     total: Decimal
 
     class Config:

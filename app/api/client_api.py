@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from app.infrastructure.conection import get_db
 from app.schemas.client_schema import ClientCreate, ClientRead
-from app.services.client import ClientService
+from app.services.client import SrvClient
 from auth import verify_token
 from app.core.logger_config import logger
 
-router = APIRouter(prefix="/v1/clients", tags=["Clients"])
+router = APIRouter(prefix="/v1/client", tags=["Client"])
 
 
 @router.post("/", response_model=ClientRead)
@@ -15,7 +15,7 @@ def create_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    service = ClientService(db)
+    service = SrvClient(db)
     result = service.create_client(data)
     logger.info(f"Client nteSer'{data.name}' created successfully by user {user_id}")
     return result
@@ -27,7 +27,7 @@ def get_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    service = ClientService(db)
+    service = SrvClient(db)
     result = service.get_client(client_name)
     logger.info(f"Client '{client_name}' retrieved successfully by user {user_id}")
     return result
@@ -40,7 +40,7 @@ def update_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    service = ClientService(db)
+    service = SrvClient(db)
     result = service.update_client(client_name, client_data)
     logger.info(f"Client '{client_name}' updated successfully by user {user_id}")
     return result
@@ -52,7 +52,7 @@ def delete_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    service = ClientService(db)
+    service = SrvClient(db)
     result = service.delete_client(client_name)
     logger.info(f"Client '{client_name}' deleted successfully by user {user_id}")
     return result
