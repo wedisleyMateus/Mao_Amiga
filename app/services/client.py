@@ -2,10 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.schemas.client_schema import ClientCreate, ClientRead
 from app.repositories.client_repository import ClientRepositoryCRUD
-
-
-class ClientNotFound(Exception):
-    pass
+from app.core.exceptions.client import ClientNotFound
 
 
 class SrvClient:
