@@ -2,8 +2,8 @@ from sqlalchemy import Column, String, Integer
 from app.infrastructure.conection import Base
 
 
-class Clients(Base):
-    __tablename__ = "clients"
+class Client(Base):
+    __tablename__ = "client"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)

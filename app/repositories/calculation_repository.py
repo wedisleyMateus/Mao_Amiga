@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.schemas.calculation_schema import CalculationResponse
-from app.models.calculation import CalculationRecord
+from app.models.calculation_model import CalculationRecord
 
 
 class RepositoryBase:
