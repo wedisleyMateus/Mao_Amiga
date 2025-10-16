@@ -12,10 +12,10 @@ class CalculationRepositoryCreate(CalculationRepositoryBase):
     def create(self, new_calculation) -> CalculationResponse:
         calculation_entity = Calculation(
             service_id=new_calculation.service_id,
-            client_id=new_calculation.client,
+            client_id=new_calculation.client_id,
             value=new_calculation.service_value,
             squad_value=new_calculation.square_meter,
-            total=new_calculation.tota
+            total=new_calculation.total
         )
         self.db.add(calculation_entity)
         self.db.commit()

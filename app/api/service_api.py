@@ -2,11 +2,12 @@ from fastapi import Depends, APIRouter, status, HTTPException
 from typing import List
 from sqlalchemy.orm import Session
 from app.schemas.service_schema import (
-    ServiceSchema,
+    ServiceRequest,
+    ServiceResponse,
     ServiceVerificationSchema,
 )
 from app.services.service import (
-    ServiceManager,
+    SrvService,
     ServiceAlreadyExistsError,
     ServiceListEmptyError
 )
@@ -18,15 +19,15 @@ router = APIRouter(prefix="/v1/services", tags=["Services"])
 
 
 @router.post(
-    "/", response_model=ServiceSchema, status_code=status.HTTP_201_CREATED
+    "/", response_model=ServiceResponse, status_code=status.HTTP_201_CREATED
 )
 def create_service(
     data: ServiceVerificationSchema,
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
-) -> ServiceSchema:
+) -> ServiceResponse:
     try:
-        service = ServiceManager(db)
+        service = SrvService(db)
         result = service.create_service(data)
         logger.info(f"Service {data.name} successfully registered by user {user_id}")
         return result
@@ -35,12 +36,12 @@ def create_service(
         raise HTTPException(status_code=409, detail="Serviço já Existente")
 
 
-@router.get("/", response_model=List[ServiceSchema])
+@router.get("/", response_model=List[ServiceResponse])
 def get_services(
     db: Session = Depends(get_db), user_id: int = Depends(verify_token)
-) -> List[ServiceSchema]:
+) -> List[ServiceResponse]:
     try:
-        services = ServiceManager(db)
+        services = SrvService(db)
         result = services.get_all_services()
         logger.info(f"List found with values by user {user_id}")
         return result
@@ -49,26 +50,26 @@ def get_services(
         raise HTTPException(status_code=404, detail="Service list is empty")
 
 
-@router.get("/{service_name}", response_model=ServiceSchema)
+@router.get("/{service_name}", response_model=ServiceResponse)
 def get_service(
     service_name: str,
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
-) -> ServiceSchema:
-    service = ServiceManager(db)
+) -> ServiceResponse:
+    service = SrvService(db)
     result = service.get_service(service_name)
     logger.info(f"Service '{service_name}' retrieved successfully by user {user_id}")
     return result
 
 
-@router.put("/{service_name}", response_model=ServiceSchema)
+@router.put("/{service_name}", response_model=ServiceResponse)
 def update_service(
     service_name: str,
-    data: ServiceSchema,
+    data: ServiceRequest,
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
-) -> ServiceSchema:
-    service = ServiceManager(db)
+) -> ServiceResponse:
+    service = SrvService(db)
     result = service.update_service(data)
     logger.info(f"Service '{service_name}' updated successfully by user {user_id}")
     return result
@@ -80,7 +81,7 @@ def delete_service(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    service = ServiceManager(db)
+    service = SrvService(db)
     result = service.delete_service(service_name)
     logger.info(f"Service '{service_name}' deleted successfully by user {user_id}")
     return result

@@ -13,7 +13,7 @@ class SrvCalculation:
         self.db = db
 
     def calculate_service_total(self, data: CalculationRequest):
-        service = self.service_repo.get_by_name(data.name)
+        service = self.service_repo.get_by_name(data.service_name)
 
         if not service:
             raise ServiceNotFoundError()
@@ -23,7 +23,7 @@ class SrvCalculation:
 
         new_calculation =  CalculationCreate(
             service_id=service.id,
-            client_id=data.client_idt,
+            client_id=data.client_id,
             service_value=service.value,
             square_meter=data.square_meter,
             total=total,
