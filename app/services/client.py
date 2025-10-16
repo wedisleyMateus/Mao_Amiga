@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.schemas.client_schema import ClientCreate, ClientRead
 from app.repositories.client_repository import ClientRepositoryCRUD
-from app.core.exceptions.client import ClientNotFound
+from app.core.exceptions.client import ClientNotFoundError
 
 
 class SrvClient:
@@ -23,7 +23,7 @@ class SrvClient:
     def create_client(self, data: ClientCreate) -> ClientRead:
         existing_client = self.client_repo.get_by_name(data.name)
         if existing_client:
-            raise ClientNotFound()
+            raise ClientNotFoundError(name=data.name)
         create = self.client_repo.create(data)
         return create
 

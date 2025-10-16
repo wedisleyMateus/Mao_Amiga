@@ -22,14 +22,14 @@ class SrvService:
     def _get_or_raise(self, name: str) -> Service:
         service = self.service_repo.get_by_name(name)
         if not service:
-            raise ServiceNotFoundError(name=name)
+            raise ServiceNotFoundError(service_name=name)
         return ServiceResponse.model_to_dict(service)
 
 
     def create_service(self, data: ServiceVerificationSchema) -> ServiceResponse:
         existing = self.service_repo.get_by_name(data.name)
         if existing:
-            raise ServiceAlreadyExistsError(name=data.name)
+            raise ServiceAlreadyExistsError(service_name=data.name)
         created = self.service_repo.create(data)
         return ServiceResponse.model_validate(created)
 
