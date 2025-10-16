@@ -1,9 +1,10 @@
 from typing import List
 from sqlalchemy.orm import Session
-from app.repositories.service_repository import RepositoryCRUD
+from app.repositories.service_repository import ServiceRepositoryCRUD
 from app.models.service_model import Service
 from app.schemas.service_schema import (
-    ServiceSchema,
+    ServiceRequest,
+    ServiceResponse,
     ServiceVerificationSchema
 )
 
@@ -22,44 +23,44 @@ class ServiceListEmptyError(Exception):
 
 class ServiceManager:
     def __init__(self, db: Session):
-        self.repository = RepositoryCRUD(db)
+        self.service_repo = ServiceRepositoryCRUD(db)
 
 
     def _get_or_raise(self, name: str) -> Service:
-        service = self.repository.get_by_name(name)
+        service = self.service_repo.get_by_name(name)
         if not service:
             raise ServiceNotFoundError()
-        return service
+        return ServiceResponse.model_to_dict(service)
 
 
-    def create_service(self, data: ServiceVerificationSchema) -> ServiceSchema:
-        existing = self.repository.get_by_name(data.name)
+    def create_service(self, data: ServiceVerificationSchema) -> ServiceResponse:
+        existing = self.service_repo.get_by_name(data.name)
         if existing:
             raise ServiceAlreadyExistsError()
-        created = self.repository.create(data)
-        return created
+        created = self.service_repo.create(data)
+        return ServiceResponse.model_to_dict(created)
 
 
-    def get_all_services(self) -> List[ServiceSchema]:
-        list_services_existing = self.repository.get_services()
+    def get_all_services(self) -> List[ServiceResponse]:
+        list_services_existing = self.service_repo.get_services()
         if not list_services_existing:
             raise ServiceListEmptyError()
-        return [ServiceSchema.model_validate(service)
+        return [ServiceResponse.model_validate(service)
                 for service in list_services_existing]
 
 
-    def get_service(self, name: str) -> ServiceSchema:
+    def get_service(self, name: str) -> ServiceResponse:
         existing = self._get_or_raise(name)
-        return ServiceSchema.model_validate(existing)
+        return ServiceResponse.model_validate(existing)
 
 
-    def update_service(self, data: ServiceSchema) -> ServiceSchema:
+    def update_service(self, data: ServiceRequest) -> ServiceResponse:
         service = self._get_or_raise(data.name)
-        updated = self.repository.update(service, data)
-        return updated
+        updated = self.service_repo.update(service, data)
+        return ServiceResponse.model_to_dict(updated)
 
 
     def delete_service(self, name: str) -> dict[str, str]:
         service = self._get_or_raise(name)
-        self.repository.delete(service)
+        self.service_repo.delete(service)
         return {"message": "Service deleted"}
