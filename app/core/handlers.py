@@ -1,3 +1,4 @@
+from fastapi import FastAPI
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from app.core.exceptions.service import (
@@ -37,3 +38,9 @@ def service_list_handler(request: Request, exc: Exception):
         status_code=500,
         content={"detail": "Internal Server Error"}
     )
+
+
+def register_service_handlers(app: FastAPI):
+    app.add_exception_handler(ServiceAlreadyExistsError, service_already_exists_handler)
+    app.add_exception_handler(ServiceNotFoundError, service_not_found_handler)
+    app.add_exception_handler(ServiceListEmptyError, service_list_handler)
