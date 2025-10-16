@@ -1,29 +1,30 @@
+from typing import List
 from sqlalchemy.orm import Session
 from app.models.service_model import Service
 from app.core.logger_config import logger
 from app.schemas.service_schema import ServiceSchema
 
 
-class RepositoryBase:
+class ServiceRepositoryBase:
     def __init__(self, db: Session):
         self.db = db
 
-    def _save(self, obj):
-        self.db.add(obj)
+    def persist(self, entity):
+        self.db.add(entity)
         self.db.commit()
-        self.db.refresh(obj)
-        return obj
+        self.db.refresh(entity)
+        return entity
 
 
-class RepositoryCreate(RepositoryBase):
+class ServiceRepositoryCreate(ServiceRepositoryBase):
     def create(self, data) -> ServiceSchema:
         service = Service(name=data.name, value=data.value)
-        self._save(service)
+        self.persist(service)
         logger.info(f"Service '{service.name}' created successfully.")
         return ServiceSchema.model_validate(service)
 
 
-class RepositoryRetrieveByName(RepositoryBase):
+class ServiceRepositoryRetrieveByName(ServiceRepositoryBase):
     def get_by_name(self, name: str) -> Service | None:
         logger.info(f"Querying service by name: '{name}'")
         service = self.db.query(Service).filter(Service.name == name).first()
@@ -31,25 +32,25 @@ class RepositoryRetrieveByName(RepositoryBase):
         return service
 
 
-class RepositoryRetrieveAll(RepositoryBase):
-    def get_services(self):
+class ServiceRepositoryRetrieveAll(ServiceRepositoryBase):
+    def get_services(self) -> List[Service]:
         logger.info("Fetching all services...")
         services = self.db.query(Service).all()
         logger.info(f"{len(services)} services found.")
         return services
 
 
-class RepositoryUpdate(RepositoryBase):
+class ServiceRepositoryUpdate(ServiceRepositoryBase):
     def update(self, service, data) -> ServiceSchema:
         service.name = data.name
         service.value = data.value
         logger.info(f"Updating service: '{service.name}'...")
-        self._save(service)
-        logger.info(f"Service '{service.name}' updated successfully.")
+        self.persist(service)
+        logger.info(f"Service '{service.name}' updated suc  cessfully.")
         return service
 
 
-class RepositoryDelete(RepositoryBase):
+class ServiceRepositoryDelete(ServiceRepositoryBase):
     def delete(self, service: Service) -> None:
         logger.info(f"Deleting service: '{service.name}'...")
         self.db.delete(service)
@@ -57,11 +58,11 @@ class RepositoryDelete(RepositoryBase):
         logger.info(f"Service '{service.name}' deleted successfully.")
 
 
-class RepositoryCRUD(
-    RepositoryCreate,
-    RepositoryRetrieveByName,
-    RepositoryRetrieveAll,
-    RepositoryUpdate,
-    RepositoryDelete
+class ServiceRepositoryCRUD(
+    ServiceRepositoryCreate,
+    ServiceRepositoryRetrieveByName,
+    ServiceRepositoryRetrieveAll,
+    ServiceRepositoryUpdate,
+    ServiceRepositoryDelete
 ):
     pass
