@@ -21,7 +21,7 @@ class ServiceListEmptyError(Exception):
     pass
 
 
-class ServiceManager:
+class SrvService:
     def __init__(self, db: Session):
         self.service_repo = ServiceRepositoryCRUD(db)
 

@@ -6,7 +6,7 @@ from app.schemas.calculation_schema import CalculationRequest, CalculationCreate
 from app.services.service import ServiceNotFoundError
 
 
-class ServiceCalculator:
+class SrvCalculation:
     def __init__(self, db: Session):
         self.service_repo = ServiceRepositoryCRUD(db)
         self.calculation_repo = CalculationRepositoryCRUD(db)

@@ -8,7 +8,7 @@ class ClientNotFound(Exception):
     pass
 
 
-class ClientService:
+class SrvClient:
     def __init__(self, db: Session):
         self.client_repo = ClientRepositoryCRUD(db)
 
