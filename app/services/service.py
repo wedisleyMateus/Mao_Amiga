@@ -1,13 +1,10 @@
-from decimal import Decimal
 from typing import List
 from sqlalchemy.orm import Session
 from app.repositories.service_repository import RepositoryCRUD
 from app.models.service_model import Service
 from app.schemas.service_schema import (
     ServiceSchema,
-    ServiceVerificationSchema,
-    ServiceCalculationRequest,
-    ServiceCalculationResponse,
+    ServiceVerificationSchema
 )
 
 
@@ -66,22 +63,3 @@ class ServiceManager:
         service = self._get_or_raise(name)
         self.repository.delete(service)
         return {"message": "Service deleted"}
-
-
-class ServiceCalculator:
-    def __init__(self, db: Session):
-        self.repository = RepositoryCRUD(db)
-
-    def calculate_service_total(self, data: ServiceCalculationRequest):
-
-        service = self.repository.get_by_name(data.name)
-        if not service:
-            raise ServiceNotFoundError()
-        else:
-            calculation = service.value * Decimal(str(data.square_meter))
-            return ServiceCalculationResponse(
-                name=service.name,
-                service_value=service.value,
-                square_meter=data.square_meter,
-                total=calculation,
-            )
