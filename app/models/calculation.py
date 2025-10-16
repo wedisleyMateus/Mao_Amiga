@@ -12,5 +12,5 @@ class CalculationRecord(Base):
     squad_value = Column(Numeric(10, 2), nullable=False)
     total = Column(Numeric(10, 2), nullable=False)
 
-    client = relationship('Client', backref='calculations')
+    client = relationship('Clients', backref='calculations')
 

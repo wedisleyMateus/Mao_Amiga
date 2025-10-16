@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class CalculationRequest(BaseModel):
     service_name: str
-    client_idt: int
+    client_id: int
     square_meter: Decimal
 
 
