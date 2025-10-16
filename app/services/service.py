@@ -22,16 +22,16 @@ class SrvService:
     def _get_or_raise(self, name: str) -> Service:
         service = self.service_repo.get_by_name(name)
         if not service:
-            raise ServiceNotFoundError()
+            raise ServiceNotFoundError(name=name)
         return ServiceResponse.model_to_dict(service)
 
 
     def create_service(self, data: ServiceVerificationSchema) -> ServiceResponse:
         existing = self.service_repo.get_by_name(data.name)
         if existing:
-            raise ServiceAlreadyExistsError()
+            raise ServiceAlreadyExistsError(name=data.name)
         created = self.service_repo.create(data)
-        return ServiceResponse.model_to_dict(created)
+        return ServiceResponse.model_validate(created)
 
 
     def get_all_services(self) -> List[ServiceResponse]:
@@ -50,7 +50,7 @@ class SrvService:
     def update_service(self, data: ServiceRequest) -> ServiceResponse:
         service = self._get_or_raise(data.name)
         updated = self.service_repo.update(service, data)
-        return ServiceResponse.model_to_dict(updated)
+        return ServiceResponse.model_validate(updated)
 
 
     def delete_service(self, name: str) -> dict[str, str]:
