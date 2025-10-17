@@ -23,7 +23,18 @@ class CalculationRepositoryCreate(CalculationRepositoryBase):
         return CalculationResponse.model_validate(calculation_entity )
 
 
+class CalculationRepositoryDelete(CalculationRepositoryBase):
+    def delete(self, calculation_id: int) -> None:
+        calculation_entity = (
+            self.db.query(Calculation).filter(Calculation.id == calculation_id).first()
+        )
+        self.db.delete(calculation_entity)
+        self.db.commit()
+        return None
+
+
 class CalculationRepositoryCRUD(
     CalculationRepositoryCreate,
+    CalculationRepositoryDelete,
 ):
     pass
