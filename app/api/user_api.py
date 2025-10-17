@@ -14,7 +14,10 @@ router = APIRouter(prefix="/login", tags=["login"])
 
 
 @router.post("", response_model=TokenResponse)
-def login(data: LoginRegisterRequest, db: Session = Depends(get_db)):
+def get_user(
+        data: LoginRegisterRequest,
+        db: Session = Depends(get_db)
+) -> TokenResponse:
     login_in = UserRepositoryCRUD(db)
     result = login_in.get_by_name(data)
     if result is None:
@@ -24,7 +27,7 @@ def login(data: LoginRegisterRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/register", response_model=LoginRegisterResponse)
-def login_register(
+def create_user(
     data: LoginRegisterRequest, db: Session = Depends(get_db)
 ) -> LoginRegisterResponse:
     login_repository = UserRepositoryCRUD(db)

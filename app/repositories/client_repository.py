@@ -1,14 +1,13 @@
 from app.models.client_model import Client
 from sqlalchemy.orm import Session
 from app.core.logger_config import logger
-from app.schemas.client_schema import ClientRead
 
 
 class ClientRepositoryBase:
     def __init__(self, db: Session):
         self.db = db
 
-    def persist(self, entity):
+    def persist(self, entity) -> Client:
         self.db.add(entity)
         self.db.commit()
         self.db.refresh(entity)
@@ -16,7 +15,7 @@ class ClientRepositoryBase:
 
 
 class ClientRepositoryCreate(ClientRepositoryBase):
-    def create(self, data) -> ClientRead:
+    def create(self, data) -> Client:
         client = Client(
             name=data.name,
             email=data.email,
@@ -26,7 +25,7 @@ class ClientRepositoryCreate(ClientRepositoryBase):
         logger.info("Starting client creation process")
         self.persist(client)
         logger.info(f"Client {client.name} successfully created")
-        return ClientRead.model_validate(client)
+        return client
 
 
 class ClientRepositoryRetrieveByName(ClientRepositoryBase):
@@ -38,15 +37,15 @@ class ClientRepositoryRetrieveByName(ClientRepositoryBase):
 
 
 class ClientRepositoryUpdate(ClientRepositoryBase):
-    def update(self, client, data) -> ClientRead:
+    def update(self, client, data) -> Client:
         client.name = data.name
         client.email = data.email
         client.telephone = data.telephone
         client.address = data.address
         logger.info(f"Starting update process for client id={client.id}")
-        self.persist(client)
+        result = self.persist(client)
         logger.info(f"Client id={client.id} successfully updated")
-        return ClientRead.model_validate(client)
+        return result
 
 
 class ClientRepositoryDelete(ClientRepositoryBase):

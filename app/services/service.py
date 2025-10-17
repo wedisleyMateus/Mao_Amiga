@@ -23,7 +23,7 @@ class SrvService:
         service = self.service_repo.get_by_name(name)
         if not service:
             raise ServiceNotFoundError(service_name=name)
-        return ServiceResponse.model_to_dict(service)
+        return service
 
 
     def create_service(self, data: ServiceVerificationSchema) -> ServiceResponse:

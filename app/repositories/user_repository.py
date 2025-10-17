@@ -12,7 +12,7 @@ class UserRepositoryBase:
 
 
 class UserRepositoryCreate(UserRepositoryBase):
-    def create(self, data):
+    def create(self, data) -> LoginRegisterResponse:
         logger.info("Starting to create a new login")
         hash_pw = hashed_password(data.password)
         account = User(username=data.username, password=hash_pw)

@@ -8,7 +8,7 @@ class ServiceRepositoryBase:
     def __init__(self, db: Session):
         self.db = db
 
-    def persist(self, entity):
+    def persist(self, entity) -> Service:
         self.db.add(entity)
         self.db.commit()
         self.db.refresh(entity)

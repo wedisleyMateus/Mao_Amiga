@@ -68,7 +68,7 @@ def delete_service(
     service_name: str,
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
-):
+)-> dict[str, str]:
     service = SrvService(db)
     result = service.delete_service(service_name)
     logger.info(f"Service '{service_name}' deleted successfully by user {user_id}")
