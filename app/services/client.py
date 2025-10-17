@@ -34,7 +34,7 @@ class SrvClient:
         return ClientRead.model_validate(update)
 
 
-    def delete_client(self, name: str ) -> dict[str, str]:
+    def delete_client(self, name: str ) -> None:
         client = self._get_or_raise(name)
         self.client_repo.delete(client)
-        return {"message": "Client deleted"}
+        return None

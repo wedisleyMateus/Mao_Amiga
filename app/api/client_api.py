@@ -17,7 +17,7 @@ def create_client(
 ):
     service = SrvClient(db)
     result = service.create_client(data)
-    logger.info(f"Client nteSer'{data.name}' created successfully by user {user_id}")
+    logger.info(f"Client '{data.name}' created successfully by user {user_id}")
     return result
 
 
@@ -51,8 +51,8 @@ def delete_client(
     client_name: str,
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
-):
+)-> None:
     service = SrvClient(db)
-    result = service.delete_client(client_name)
+    service.delete_client(client_name)
     logger.info(f"Client '{client_name}' deleted successfully by user {user_id}")
-    return result
+    return None

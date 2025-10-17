@@ -53,7 +53,7 @@ class ClientRepositoryDelete(ClientRepositoryBase):
         logger.info(f"Starting delete process for client id={client.id}")
         self.db.delete(client)
         self.db.commit()
-        logger.indo("Delete with successfully deleted")
+        logger.info("Delete with successfully deleted")
 
 
 class ClientRepositoryCRUD(
