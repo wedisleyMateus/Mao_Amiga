@@ -7,14 +7,18 @@ from app.core.exceptions.service import (
     ServiceNotFoundError,
     ServiceListEmptyError
 )
-from app.core.exceptions.client import ClientNotFound
 
 
-def generic_error_handler(request, exc, exception_class, status_code) -> JSONResponse:
+def generic_service_error_handler(
+        request,
+        exc,
+        exception_class,
+        status_code
+) -> JSONResponse:
     if isinstance(exc, exception_class):
         return JSONResponse(
             status_code=status_code,
-            content={"message": exc.message}
+            content={"message": exc.message_suffix}
         )
     return JSONResponse(
         status_code=500,
@@ -24,12 +28,16 @@ def generic_error_handler(request, exc, exception_class, status_code) -> JSONRes
 
 def service_already_exists_handler(request, exc):
     logger.warning(f"ServiceAlreadyExistsError, path: {request.url.path}")
-    return generic_error_handler(request, exc, ServiceAlreadyExistsError, 402)
+    return generic_service_error_handler(
+        request, exc, ServiceAlreadyExistsError, 402
+    )
 
 
 def service_not_found_handler(request: Request, exc: Exception):
     logger.warning(f"ServiceNotFoundError, path: {request.url.path}")
-    return generic_error_handler(request, exc, ServiceNotFoundError, 402)
+    return generic_service_error_handler(
+        request, exc, ServiceNotFoundError, 402
+    )
 
 
 def service_list_handler(request: Request, exc: Exception):
@@ -44,17 +52,9 @@ def service_list_handler(request: Request, exc: Exception):
         content={"detail": "Internal Server Error"}
     )
 
-def client_not_found_handler(request, exc):
-    logger.warning(f"ClientNotFoundError, path: {request.url.path}")
-    return generic_error_handler(request, exc, ClientNotFound, 402)
-
-
-
 def register_service_handlers(app: FastAPI):
-    app.add_exception_handler(ServiceAlreadyExistsError, service_already_exists_handler)
+    app.add_exception_handler(
+        ServiceAlreadyExistsError, service_already_exists_handler
+    )
     app.add_exception_handler(ServiceNotFoundError, service_not_found_handler)
     app.add_exception_handler(ServiceListEmptyError, service_list_handler)
-
-
-def register_client_handlers(app: FastAPI):
-    app.add_exception_handler(ClientNotFound, client_not_found_handler)

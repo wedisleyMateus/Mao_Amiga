@@ -1,4 +1,3 @@
-from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 from app.schemas.client_schema import ClientCreate, ClientRead
 from app.repositories.client_repository import ClientRepositoryCRUD
@@ -13,17 +12,12 @@ class SrvClient:
     def _get_or_raise(self, name: str) -> ClientRead:
         client = self.client_repo.get_by_name(name)
         if not client:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Client not found"
-            )
+            raise ClientNotFoundError(name=name)
         return ClientRead.model_validate(client)
 
 
     def create_client(self, data: ClientCreate) -> ClientRead:
-        existing_client = self.client_repo.get_by_name(data.name)
-        if existing_client:
-            raise ClientNotFoundError(name=data.name)
+        self.client_repo.get_by_name(data.name)
         create = self.client_repo.create(data)
         return create
 
