@@ -1,4 +1,6 @@
+from app.models.calculation_model import Calculation
 from app.models.client_model import Client
+from typing import List
 from sqlalchemy.orm import Session
 from app.core.logger_config import logger
 
@@ -56,10 +58,20 @@ class ClientRepositoryDelete(ClientRepositoryBase):
         logger.info("Delete with successfully deleted")
 
 
+
+class ClientRepositoryBudget(ClientRepositoryBase):
+    def get_list_budget(self, client) -> List[Calculation]:
+        calculations = (
+            self.db.query(Calculation).filter(Calculation.client_id == client).all()
+        )
+        return calculations
+
+
 class ClientRepositoryCRUD(
     ClientRepositoryCreate,
     ClientRepositoryRetrieveByName,
     ClientRepositoryUpdate,
-    ClientRepositoryDelete
+    ClientRepositoryDelete,
+    ClientRepositoryBudget
 ):
     pass

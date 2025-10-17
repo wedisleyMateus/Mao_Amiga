@@ -1,7 +1,8 @@
+from typing import List
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from app.infrastructure.conection import get_db
-from app.schemas.client_schema import ClientCreate, ClientRead
+from app.schemas.client_schema import ClientCreate, ClientRead, ClientBudgetResponse
 from app.services.client import SrvClient
 from auth import verify_token
 from app.core.logger_config import logger
@@ -27,8 +28,8 @@ def get_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 ):
-    service = SrvClient(db)
-    result = service.get_client(client_name)
+    client = SrvClient(db)
+    result = client.get_client(client_name)
     logger.info(f"Client '{client_name}' retrieved successfully by user {user_id}")
     return result
 
@@ -52,7 +53,18 @@ def delete_client(
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
 )-> None:
-    service = SrvClient(db)
-    service.delete_client(client_name)
+    client = SrvClient(db)
+    client.delete_client(client_name)
     logger.info(f"Client '{client_name}' deleted successfully by user {user_id}")
     return None
+
+
+@router.get("/{client_name}/budgets", response_model=List[ClientBudgetResponse])
+def get_budgets(
+    client_name: str,
+    db: Session = Depends(get_db),
+    _user_id: int = Depends(verify_token),
+):
+    client_budget = SrvClient(db)
+    result = client_budget.get_budget(client_name)
+    return result

@@ -1,6 +1,7 @@
+from typing import List
 from sqlalchemy.orm import Session
 from app.models.client_model import Client
-from app.schemas.client_schema import ClientCreate, ClientRead
+from app.schemas.client_schema import ClientCreate, ClientRead, ClientBudgetResponse
 from app.repositories.client_repository import ClientRepositoryCRUD
 from app.core.exceptions.client import ClientNotFoundError
 
@@ -38,3 +39,9 @@ class SrvClient:
         client = self._get_or_raise(name)
         self.client_repo.delete(client)
         return None
+
+    def get_budget(self, client: str)-> List[ClientBudgetResponse]:
+        client = self._get_or_raise(client)
+        budgets = self.client_repo.get_list_budget(client.id)
+        return [ClientBudgetResponse.model_validate(calculation)
+                for calculation in budgets]

@@ -8,9 +8,9 @@ from alembic import context
 from app.infrastructure.conection import Base
 
 # from app.models.service_model import Service
-# from app.models.client_model import Clients
-# from app.models.login_model import Login
-# from app.models.calculation import CalculationRecord
+# from app.models.client_model import Client
+# from app.models.user_model import User
+# from app.models.calculation_model import Calculation
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
