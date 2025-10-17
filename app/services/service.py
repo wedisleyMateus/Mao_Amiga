@@ -23,7 +23,7 @@ class SrvService:
         service = self.service_repo.get_by_name(name)
         if not service:
             raise ServiceNotFoundError(service_name=name)
-        return ServiceResponse.model_to_dict(service)
+        return service
 
 
     def create_service(self, data: ServiceVerificationSchema) -> ServiceResponse:
@@ -53,7 +53,7 @@ class SrvService:
         return ServiceResponse.model_validate(updated)
 
 
-    def delete_service(self, name: str) -> dict[str, str]:
+    def delete_service(self, name: str) -> None:
         service = self._get_or_raise(name)
         self.service_repo.delete(service)
-        return {"message": "Service deleted"}
+        return None
