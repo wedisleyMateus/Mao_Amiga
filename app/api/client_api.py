@@ -6,7 +6,7 @@ from app.services.client import SrvClient
 from auth import verify_token
 from app.core.logger_config import logger
 
-router = APIRouter(prefix="/v1/client", tags=["Client"])
+router = APIRouter(prefix="/clients", tags=["Client"])
 
 
 @router.post("/", response_model=ClientRead)

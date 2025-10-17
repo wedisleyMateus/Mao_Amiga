@@ -11,7 +11,7 @@ from app.infrastructure.conection import get_db
 from auth import verify_token
 from app.core.logger_config import logger
 
-router = APIRouter(prefix="/v1/services", tags=["Services"])
+router = APIRouter(prefix="/services", tags=["Services"])
 
 
 @router.post(

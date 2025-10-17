@@ -1,8 +1,8 @@
 class ServiceBaseError(Exception):
-    def __init__(self, service_name: str, message_suffix: str):
+    def __init__(self, service_name: str, message: str):
         self.service_name = service_name
-        self.message_suffix = message_suffix
-        super().__init__(self.message_suffix)
+        self.message = message
+        super().__init__(self.message)
 
 class ServiceNotFoundError(ServiceBaseError):
     def __init__(self, service_name: str):

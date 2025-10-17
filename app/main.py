@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.api import client_api, user_api, service_api, calculation_api
-from app.core.handlers import register_service_handlers, register_client_handlers
+from app.core.handlers.service_handler import register_service_handlers
+from app.core.handlers.client_handler import register_client_handlers
 
 app = FastAPI()
 
