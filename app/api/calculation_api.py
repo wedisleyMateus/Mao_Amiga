@@ -1,4 +1,5 @@
-from fastapi import Depends, APIRouter, HTTPException
+
+from fastapi import Depends, APIRouter, HTTPException, status
 from sqlalchemy.orm import Session
 from app.schemas.calculation_schema import (
     CalculationRequest,
@@ -16,7 +17,7 @@ router = APIRouter(prefix="/calculation", tags=["Services"])
 
 
 @router.post("", response_model=CalculationResponse)
-def calculation(
+def create_calculation(
     data: CalculationRequest,
     db: Session = Depends(get_db),
     user_id: int = Depends(verify_token),
@@ -31,3 +32,13 @@ def calculation(
     except ServiceNotFoundError:
         logger.warning(f"Service {data.service_name} not found")
         raise HTTPException(status_code=404, detail="Service not found")
+
+
+@router.delete("/{calculation_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_calculation(
+        calculation_id: int,
+        db: Session = Depends(get_db),
+        _user_id: int = Depends(verify_token)
+):
+    calc = SrvCalculation(db)
+    calc.delete_calculation(calculation_id)

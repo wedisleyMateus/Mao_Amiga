@@ -16,8 +16,7 @@ class SrvCalculation:
         service = self.service_repo.get_by_name(data.service_name)
 
         if not service:
-            raise ServiceNotFoundError()
-
+            raise ServiceNotFoundError(service_name=data.service_name)
 
         total = service.value * Decimal(str(data.square_meter))
 
@@ -30,4 +29,9 @@ class SrvCalculation:
         )
         result = self.calculation_repo.create(new_calculation)
         return result
+
+
+    def delete_calculation(self, calculation_id: int) -> None:
+        self.calculation_repo.delete(calculation_id)
+        return None
 
