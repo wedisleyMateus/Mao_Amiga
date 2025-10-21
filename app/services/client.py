@@ -42,6 +42,6 @@ class SrvClient:
 
     def get_budget(self, client: str)-> List[ClientBudgetResponse]:
         client = self._get_or_raise(client)
-        budgets = self.client_repo.get_list_budget(client.id)
+        budgets = self.client_repo.get_list_budget(client)
         return [ClientBudgetResponse.model_validate(calculation)
                 for calculation in budgets]
