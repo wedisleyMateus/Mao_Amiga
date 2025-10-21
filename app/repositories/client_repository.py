@@ -1,4 +1,3 @@
-from app.models.calculation_model import Calculation
 from app.models.client_model import Client
 from typing import List
 from sqlalchemy.orm import Session
@@ -60,11 +59,9 @@ class ClientRepositoryDelete(ClientRepositoryBase):
 
 
 class ClientRepositoryBudget(ClientRepositoryBase):
-    def get_list_budget(self, client) -> List[Calculation]:
-        calculations = (
-            self.db.query(Calculation).filter(Calculation.client_id == client).all()
-        )
-        return calculations
+    def get_list_budget(self, client) -> List[Client]:
+        result = client.calculations
+        return result
 
 
 class ClientRepositoryCRUD(
