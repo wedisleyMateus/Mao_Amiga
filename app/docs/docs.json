@@ -1,0 +1,26 @@
+{
+    "name": "POC FastAPI + Mintlify",
+    "theme": "mint",
+    "colors": {
+        "primary": "#00bfa6",
+        "light": "#ffffff",
+        "dark": "#1a1a1a"
+    },
+    "navigation": {
+        "groups": [
+            {
+                "group": "Introdução",
+                "pages": [
+                    "index",
+                    "quickstart"
+                ]
+            },
+            {
+                "group": "API",
+                "pages": [
+                    "api/openapi.json"
+                ]
+            }
+        ]   
+    }
+}

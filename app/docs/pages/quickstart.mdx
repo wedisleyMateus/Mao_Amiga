@@ -1,0 +1,13 @@
+# ⚡ Guia Rápido (Quickstart)
+
+Para iniciar localmente:
+
+```bash
+# 1. Inicie o servidor FastAPI
+uvicorn app.main:app --reload
+
+# 2. Exporte o OpenAPI
+python tools/export_openapi.py
+
+# 3. Rode a doc Mintlify
+mint dev
