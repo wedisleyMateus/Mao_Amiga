@@ -7,20 +7,26 @@
         "dark": "#1a1a1a"
     },
     "navigation": {
-        "groups": [
+        "dropdowns": [
             {
-                "group": "Introdução",
-                "pages": [
-                    "index",
-                    "quickstart"
-                ]
-            },
-            {
-                "group": "API",
-                "pages": [
-                    "api/openapi.json"
+                "dropdown": "API Reference",
+                "description": "Documentação da API",
+                "groups": [
+                    {
+                        "group": "Endpoints",
+                        "pages": [
+                        { "api": "api/openapi.json", "title": "Documentação da API" }
+                        ]
+                    },
+                    {
+                        "group": "Introducao",
+                        "pages": [
+                            {"page": "index", "title": "Pagica inicial"},
+                            {"page": "quickstart", "title": "Como começar rapidamente"}
+                        ]
+                    }
                 ]
             }
-        ]   
+        ]
     }
 }
